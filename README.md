@@ -2,7 +2,7 @@
 
 ## Description
 
-Database management tool for a pizza delivery service including a database schema for mysql.
+Database management tool for orders of a pizza delivery service including a database schema for mysql.
 
 Interfaces to manage the database are:
 * CLI: Input data into the database
