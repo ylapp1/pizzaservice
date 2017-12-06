@@ -1,0 +1,15 @@
+{
+    "require": {
+        "propel/propel1": "1.7"
+    },
+
+    "scripts": {
+
+        "post-install-cmd": [
+            "vendor/bin/propel-gen propel om",
+            "vendor/bin/propel-gen propel sql",
+            "vendor/bin/propel-gen propel insert-sql",
+            "vendor/bin/propel-gen propel convert-conf"
+        ]
+    }
+}
