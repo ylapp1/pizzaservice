@@ -1,6 +1,7 @@
 {
     "require": {
-        "propel/propel1": "1.7"
+        "propel/propel1": "1.7",
+        "symfony/console": "^3.4"
     },
 
     "scripts": {
