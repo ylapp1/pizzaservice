@@ -33,29 +33,29 @@ class CreateIngredientCommand extends Command
     /**
      * Asks the user for the ingredient name and inserts it into the database if no entry with that name exists.
      *
-     * @param InputInterface $input The input interface
-     * @param OutputInterface $output The output interface
+     * @param InputInterface $_input The input interface
+     * @param OutputInterface $_output The output interface
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $_input, OutputInterface $_output)
     {
         $helper = $this->getHelper("question");
         $questionIngredientName = new Question("Name of the new ingredient: ");
 
-        $ingredientName = (String)$helper->ask($input, $output, $questionIngredientName);
+        $ingredientName = (String)$helper->ask($_input, $_output, $questionIngredientName);
 
-        if (! $ingredientName) $output->writeln("Error: No ingredient name entered!");
+        if (! $ingredientName) $_output->writeln("Error: No ingredient name entered!");
         else
         {
             $ingredient = IngredientQuery::create()->findOneByName($ingredientName);
 
-            if ($ingredient) $output->writeln("Error: An ingredient with that name already exists!");
+            if ($ingredient) $_output->writeln("Error: An ingredient with that name already exists!");
             else
             {
                 $ingredient = new Ingredient();
                 $ingredient->setName($ingredientName)
                            ->save();
 
-                $output->writeln("Ingredient '" . $ingredientName . "' was added to the database!");
+                $_output->writeln("Ingredient '" . $ingredientName . "' was added to the database!");
             }
         }
     }

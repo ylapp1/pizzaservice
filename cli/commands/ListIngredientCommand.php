@@ -31,26 +31,26 @@ class ListIngredientCommand extends Command
     /**
      * Shows a list of all ingredients.
      *
-     * @param InputInterface $input The input interface
-     * @param OutputInterface $output The output interface
+     * @param InputInterface $_input The input interface
+     * @param OutputInterface $_output The output interface
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $_input, OutputInterface $_output)
     {
         $ingredients = IngredientQuery::create()->orderByName()
                                                 ->find();
         $amountIngredients = count($ingredients);
 
-        if ($amountIngredients == 0) $output->writeln("There are no ingredients yet");
+        if ($amountIngredients == 0) $_output->writeln("There are no ingredients yet");
         else
         {
-            $output->writeln("\nThe available ingredients are:\n");
+            $_output->writeln("\nThe available ingredients are:\n");
 
             for ($i = 0; $i < $amountIngredients; $i++)
             {
-                $output->writeln(" " . ($i + 1) . ". " . $ingredients[$i]->getName());
+                $_output->writeln(" " . ($i + 1) . ". " . $ingredients[$i]->getName());
             }
 
-            $output->writeln("");
+            $_output->writeln("");
         }
     }
 }

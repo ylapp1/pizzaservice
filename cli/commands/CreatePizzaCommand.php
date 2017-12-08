@@ -104,7 +104,7 @@ class CreatePizzaCommand extends Command
         if ($_isUnique)
         {
             $pizza = PizzaQuery::create()->filterBy($_columnName, $propertyValue)
-                ->findOne();
+                                         ->findOne();
             if ($pizza)
             {
                 $_output->writeln("Error: A pizza with the " . $_displayProperty . " '" . $propertyValue . "' already exists!");

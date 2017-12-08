@@ -31,34 +31,34 @@ class ListPizzaCommand extends Command
     /**
      * Shows a list of all pizzas including their ingredients.
      *
-     * @param InputInterface $input The input interface
-     * @param OutputInterface $output The output interface
+     * @param InputInterface $_input The input interface
+     * @param OutputInterface $_output The output interface
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $_input, OutputInterface $_output)
     {
         $pizzas = PizzaQuery::create()->orderByOrderCode()
                                       ->find();
         $amountPizzas = count($pizzas);
 
-        if ($amountPizzas == 0) $output->writeln("\nThere are no pizzas yet\n");
+        if ($amountPizzas == 0) $_output->writeln("\nThere are no pizzas yet\n");
         else
         {
-            $output->writeln("\nThe available pizzas are:\n");
+            $_output->writeln("\nThe available pizzas are:\n");
 
             foreach ($pizzas as $pizza)
             {
-                $output->writeln(" " . $pizza->getOrderCode() . ". " . $pizza->getName());
+                $_output->writeln(" " . $pizza->getOrderCode() . ". " . $pizza->getName());
 
                 foreach ($pizza->getPizzaIngredients() as $pizzaIngredient)
                 {
                     if ($pizzaIngredient instanceOf \PizzaService\Propel\Models\PizzaIngredient)
                     {
                         $ingredient = $pizzaIngredient->getIngredient();
-                        $output->writeln("  * " . $ingredient->getName() . " (" . $pizzaIngredient->getGrams() . "g)");
+                        $_output->writeln("  * " . $ingredient->getName() . " (" . $pizzaIngredient->getGrams() . "g)");
                     }
                 }
 
-                $output->writeln("");
+                $_output->writeln("");
             }
         }
     }
