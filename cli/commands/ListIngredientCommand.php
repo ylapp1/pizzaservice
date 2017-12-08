@@ -8,6 +8,7 @@
 
 namespace PizzaService\Cli\Commands;
 
+use PizzaService\Propel\Models\Ingredient;
 use PizzaService\Propel\Models\IngredientQuery;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -36,6 +37,7 @@ class ListIngredientCommand extends Command
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
+        /** @var Ingredient[] $ingredients */
         $ingredients = IngredientQuery::create()->orderByName()
                                                 ->find();
         $amountIngredients = count($ingredients);

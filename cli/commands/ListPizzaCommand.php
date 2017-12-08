@@ -8,6 +8,7 @@
 
 namespace PizzaService\Cli\Commands;
 
+use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\PizzaQuery;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -36,6 +37,7 @@ class ListPizzaCommand extends Command
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
+        /** @var Pizza[] $pizzas */
         $pizzas = PizzaQuery::create()->orderByOrderCode()
                                       ->find();
         $amountPizzas = count($pizzas);
