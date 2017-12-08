@@ -6,7 +6,7 @@
             <datasource id="pizza_service">
                 <adapter>mysql</adapter>
                 <connection>
-                    <dsn>mysql:host=localhost:1234;dbname=pizza_service;charset=utf8</dsn>
+                    <dsn>mysql:host=localhost;port=1234;dbname=pizza_service;charset=utf8</dsn>
                     <user>pizzatool</user>
                     <password>password</password>
                 </connection>
