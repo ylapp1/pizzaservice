@@ -25,15 +25,13 @@
     <table name="orders" phpName="Order">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="customer_id" type="integer" required="true"/>
-        <!--<column name="created_at" type="timestamp" required="true"/>-->
         <column name="completed_at" type="timestamp" required="false"/>
-        <!--<column name="total" type="float"/>-->
 
         <foreign-key foreignTable="customers" phpName="Customer" refPhpName="Order">
             <reference local="customer_id" foreign="id"/>
         </foreign-key>
 
-        <!-- Automatically create a created_at column when an entry is created -->
+        <!-- Automatically creates a created_at and a updated_at column when entries are added/updated -->
         <behavior name="timestampable" />
 
     </table>
