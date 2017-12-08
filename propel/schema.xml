@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="pizza_service" defaultIdMethod="native" namespace="PizzaService\Propel\Models">
+
+    <!-- Tables -->
+    <table name="customers" phpName="Customer">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+
+        <!-- name -->
+        <column name="first_name" type="varchar" size="255" required="true"/>
+        <column name="last_name" type="varchar" size="255" required="true"/>
+
+        <!-- Address -->
+        <column name="country" type="varchar" size="255" required="true"/>
+        <column name="zip" type="integer" required="true"/>
+        <column name="city" type="varchar" size="255" required="true"/>
+        <column name="street_name" type="varchar" size="255" required="true"/>
+        <column name="house_number" type="smallint" required="true"/>
+    </table>
+
+    <table name="ingredients" phpName="Ingredient">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="255" required="true"/>
+    </table>
+
+    <table name="orders" phpName="Order">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="customer_id" type="integer" required="true"/>
+        <column name="completed_at" type="timestamp" required="false"/>
+
+        <foreign-key foreignTable="customers" phpName="Customer" refPhpName="Order">
+            <reference local="customer_id" foreign="id"/>
+        </foreign-key>
+
+        <!-- Automatically creates a created_at and a updated_at column when entries are added/updated -->
+        <behavior name="timestampable" />
+
+    </table>
+
+    <table name="pizzas" phpName="Pizza">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="255" required="true"/>
+        <column name="order_code" type="smallint" required="true"/>
+        <column name="price" type="float" required="true"/>
+    </table>
+
+
+    <!-- Relations -->
+    <table name="order_pizzas" phpName="PizzaOrder" isCrossRef="true">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="pizza_id" type="integer" required="true"/>
+        <column name="order_id" type="integer" required="true"/>
+        <column name="amount" type="smallint" required="true"/>
+
+        <foreign-key foreignTable="orders" phpName="Order" refPhpName="PizzaOrder" onDelete="CASCADE">
+            <reference local="order_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="pizzas" phpName="Pizza" refPhpName="PizzaOrder" onDelete="RESTRICT">
+            <reference local="pizza_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+    <table name="pizza_ingredients" phpName="PizzaIngredient" isCrossRef="true">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="pizza_id" type="integer" required="true"/>
+        <column name="ingredient_id" type="integer" required="true"/>
+        <column name="grams" type="float" required="true"/>
+
+        <foreign-key foreignTable="pizzas" phpName="Pizza" refPhpName="PizzaIngredient" onDelete="CASCADE">
+            <reference local="pizza_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="ingredients" phpName="Ingredient" refPhpName="PizzaIngredient" onDelete="RESTRICT">
+            <reference local="ingredient_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+</database>

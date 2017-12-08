@@ -1,3 +1,6 @@
 .idea
 .vagrant
 vendor
+propel/models
+propel/conf
+propel/sql

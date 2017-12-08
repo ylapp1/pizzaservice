@@ -67,3 +67,18 @@ cd
 pear channel-discover pear.phing.info
 pear install phing/phing
 pear install Log
+
+
+# Initialize Database
+mysql -u root -proot -e "CREATE DATABASE pizza_service;"
+
+# Create MYSQL user for pizza tool
+mysql -u root -proot -e "CREATE USER 'pizzatool'@'%' IDENTIFIED BY 'password';"
+mysql -u root -proot -e "GRANT ALL PRIVILEGES ON pizza_service.* TO 'pizzatool'@'%';"
+mysql -u root -proot -e "FLUSH PRIVILEGES;"
+
+# Allow remote connection to database by commenting out the line "bind-address = 127.0.0.1"
+sed -i "/bind-address/s/^/#/" /etc/mysql/mysql.conf.d/mysqld.cnf
+
+# Restart mysql server in order to use the updated configuration
+service mysql restart
