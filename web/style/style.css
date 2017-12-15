@@ -1,0 +1,24 @@
+.pizza-action input.form-control {
+    width: 80px;
+}
+
+.address-input-field {
+    background: none;
+}
+
+.address-input-field div.row {
+    margin: 0 0 10px;
+}
+
+.pizza-counter {
+    background: #2a2730;
+    color: #fff;
+    border-radius: 25px;
+    padding: 2px 10px;
+}
+
+.invisible {
+    display: none;
+    //height: 102px;
+    visibility: hidden;
+}
