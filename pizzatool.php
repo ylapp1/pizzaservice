@@ -15,6 +15,7 @@ Propel::init(__DIR__ . "/propel/conf/pizza_service-conf.php");
 use PizzaService\Cli\Commands\CreateIngredientCommand;
 use PizzaService\Cli\Commands\CreatePizzaCommand;
 use PizzaService\Cli\Commands\ListIngredientCommand;
+use PizzaService\Cli\Commands\ListOrderCommand;
 use PizzaService\Cli\Commands\ListPizzaCommand;
 use Symfony\Component\Console\Application;
 
@@ -23,5 +24,6 @@ $application = new Application();
 $application->add(new CreateIngredientCommand());
 $application->add(new CreatePizzaCommand());
 $application->add(new ListIngredientCommand());
+$application->add(new ListOrderCommand());
 $application->add(new ListPizzaCommand());
 $application->run();
