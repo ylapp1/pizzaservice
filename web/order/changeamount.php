@@ -6,6 +6,7 @@
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
+// Updates the amount of order pizzas for a single pizza
 $pizzaId = (int)$_GET["pizza-id"];
 $amount = (int)$_GET["amount"];
 

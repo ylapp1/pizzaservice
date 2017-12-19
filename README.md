@@ -19,20 +19,29 @@ Interfaces to manage the database are:
 
 ## Usage
 
-### Pizza Tool
+### Command Line Interface
+
+#### Pizza Tool
 
 ````
 php pizzatool.php command [options] [arguments]
 ````
 
-#### Options
+##### Options
 
 | command           | description                            |
 | ----------------- | -------------------------------------- |
+| complete:order    | Completes an uncompleted order.        |
 | create:ingredient | Adds a new ingredient to the database. |
 | create:pizza      | Adds a new pizza to the database.      |
 | list:ingredient   | Shows a list of all ingredients.       |
+| list:order        | Shows a list of all orders.            |
 | list:pizza        | Shows a list of all pizzas.            |
+
+
+### Web Interface
+
+Open your web browser and visit localhost:4567 to use the web interface.
 
 
 ## License

@@ -18,7 +18,7 @@ use PizzaService\Propel\Models\CustomerQuery;
 use PizzaService\Propel\Models\Order;
 use PizzaService\Propel\Models\PizzaOrder;
 
-
+// Inserts the order into the database
 if (session_id() == "") session_start();
 if (! $_SESSION["orderPizzas"]) return;
 

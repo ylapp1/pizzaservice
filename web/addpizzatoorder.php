@@ -9,7 +9,7 @@
 $pizzaId = (int)$_GET["pizza-id"];
 $amount = (int)$_GET["amount"];
 
-
+// Adds an amount of pizzas to an order pizza
 if (session_id() == "") session_start();
 
 if (! $_SESSION["orderPizzas"]) $_SESSION["orderPizzas"] = array($pizzaId => $amount);
