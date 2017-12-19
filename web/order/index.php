@@ -29,10 +29,20 @@ $pizzaIds = array_keys($_SESSION["orderPizzas"]);
 $pizzas = PizzaQuery::create()->orderByOrderCode()
                               ->findById($pizzaIds);
 
+$totalPrice = 0;
+foreach ($pizzas as $pizza)
+{
+    $pizzaAmount = $_SESSION["orderPizzas"][$pizza->getId()];
+    $pizzaPrice = $pizza->getPrice();
+
+    $totalPrice += $pizzaAmount * $pizzaPrice;
+}
+
 $template = $twig->load("pizzaOrder.twig");
 echo $template->render(
     array(
         "totalAmountPizzas" => array_sum($_SESSION["orderPizzas"]),
-        "pizzas" => $pizzaListConverter->getPizzaList($pizzas, $_SESSION["orderPizzas"])
+        "pizzas" => $pizzaListConverter->getPizzaList($pizzas, $_SESSION["orderPizzas"]),
+        "totalPrice" => $totalPrice
     )
 );

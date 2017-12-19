@@ -5,9 +5,12 @@
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
+var totalPrice;
+
 $(document).ready(function(){
 
     var pizzaTableBody = $(".pizza-table tbody");
+    totalPrice = $(".totalPrice span");
 
     // Event handler for the order button
     $(".address-input-field button").on("click", function(){
@@ -66,10 +69,33 @@ $(document).ready(function(){
 
         var previousValue = Number(input.data('val'));
         var currentValue = Number(input.val());
+        var difference = currentValue - previousValue;
 
         // Update the pizza counter
-        setPizzaCount(getPizzaCount() + currentValue - previousValue);
+        setPizzaCount(getPizzaCount() + difference);
 
+        var price = parseFloat(input.parents().eq(2).find("td:nth-child(3)").text());
+        setTotalPrice(getTotalPrice() + (difference * price));
     });
 
 });
+
+/**
+ * Returns the current price in the total price paragraph.
+ *
+ * @returns int The current price in the total price paragraph
+ */
+function getTotalPrice()
+{
+    return parseFloat(totalPrice.text());
+}
+
+/**
+ * Sets the current price in the total price paragraph.
+ *
+ * @param _totalPrice The new price in the total price paragraph
+ */
+function setTotalPrice(_totalPrice)
+{
+    totalPrice.text(_totalPrice);
+}

@@ -2,13 +2,6 @@
     width: 80px;
 }
 
-.address-input-field {
-    background: none;
-}
-.address-input-field div.row {
-    margin: 0 0 10px;
-}
-
 .pizza-counter {
     background: #2a2730;
     color: #fff;
@@ -19,4 +12,17 @@
 div#message {
     height: 52px;
     margin-bottom: 20px;
+}
+
+
+/* /web/order/index.php */
+.totalPrice {
+    font-weight: bold;
+}
+
+.address-input-field {
+    background: none;
+}
+.address-input-field div.row {
+    margin: 0 0 10px;
 }

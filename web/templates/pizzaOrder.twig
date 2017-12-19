@@ -28,6 +28,9 @@
 
     {% endembed %}
 
+    <hr>
+    <p class="text-right totalPrice">Gesamt: <span>{{ totalPrice|default(0) }}</span> €</p>
+
     {% embed "blocks/addressInputField.twig" %}{% endembed %}
 
 {% endblock %}
