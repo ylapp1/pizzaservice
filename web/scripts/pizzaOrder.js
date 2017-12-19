@@ -7,6 +7,8 @@
 
 $(document).ready(function(){
 
+    var pizzaTableBody = $(".pizza-table tbody");
+
     // Event handler for the order button
     $(".address-input-field button").on("click", function(){
 
@@ -31,7 +33,10 @@ $(document).ready(function(){
 
                 if (_text.indexOf("Fehler") === -1)
                 {
-                    showSuccessMessage("<strong>Vielen Dank!</strong> Die Bestellung wurde entgegengenommen!")
+                    showSuccessMessage("<strong>Vielen Dank!</strong> Die Bestellung wurde entgegengenommen!");
+                    pizzaTableBody.find("tr").remove();
+                    pizzaTableBody.append("<tr><td colspan=\"6\" class=\"text-center\">Die Bestellung ist leer</td></tr>");
+                    setPizzaCount(0);
                 }
                 else showErrorMessage(_text.replace("Fehler: ", ""));
             },
