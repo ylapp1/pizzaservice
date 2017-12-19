@@ -20,6 +20,7 @@ use PizzaService\Propel\Models\PizzaOrder;
 
 
 if (session_id() == "") session_start();
+if (! $_SESSION["orderPizzas"]) return;
 
 
 $amountPizzas = 0;

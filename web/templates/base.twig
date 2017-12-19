@@ -1,0 +1,67 @@
+{#
+ # @file
+ # @version 0.1
+ # @copyright 2017 CN-Consult GmbH
+ # @author Yannick Lapp <yannick.lapp@cn-consult.eu>
+ #}
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <title>PizzaService - {% block pageTitle %}{% endblock %}</title>
+
+        {# JQuery #}
+        <script src="/vendor/components/jquery/jquery.js"></script>
+
+        {# Bootstrap #}
+        <link href="/vendor/twbs/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+        <script src="/vendor/twbs/bootstrap/dist/js/bootstrap.js"></script>
+
+        {# Custom styles #}
+        <link href="/web/style/style.css" rel="stylesheet">
+
+        {# Custom javascript #}
+        <script src="/web/scripts/javascript.js"></script>
+        <script src="/web/scripts/{% block pageJavaScript %}{% endblock %}"></script>
+
+    </head>
+
+    <body>
+
+        <div class="container">
+
+            <div class="navbar navbar-default navbar-static-top">
+
+                <a href="/web/index.php" class="navbar-brand">PizzaService</a>
+
+                <ul class="nav navbar-nav nav-pills">
+
+                    <li class="{% if pizzaMenuCardActive %}active{% endif %}">
+                        <a href="/web/index.php">Pizzakarte</a>
+                    </li>
+
+                    <li class="{% if pizzaOrderActive %}active{% endif %}">
+                        <a href="/web/order">
+                            Bestellung
+                            <sup class="pizza-counter">{% block totalAmountPizzas %}{% endblock %}</sup>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
+
+            <div id="message" class="invisible">
+                <a href="#" class="close">&times;</a>
+                <p></p>
+            </div>
+
+            <div id="content">
+                {% block content %}{% endblock %}
+            </div>
+
+            {# Footer goes here #}
+        </div>
+    </body>
+
+</html>

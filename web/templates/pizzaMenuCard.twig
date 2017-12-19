@@ -1,0 +1,32 @@
+{#
+ # @file
+ # @version 0.1
+ # @copyright 2017 CN-Consult GmbH
+ # @author Yannick Lapp <yannick.lapp@cn-consult.eu>
+ #}
+{% extends "base.twig" %}
+
+{# Head #}
+{% block pageTitle %}Pizzakarte{% endblock %}
+{% block pageJavaScript %}pizzaMenuCard.js{% endblock %}
+
+{# Navigation bar#}
+{% set pizzaMenuCardActive = true %}
+{% block totalAmountPizzas %}{{ totalAmountPizzas|default(0) }}{% endblock %}
+
+{# Main content #}
+{% block content %}
+
+    {# Table of pizzas in the order list #}
+    {% embed "blocks/pizzaTable.twig" %}
+
+        {% block actionButtonColumnTitle %}Bestellung{% endblock %}
+        {% block actionButton %}
+            <button type="button" class="btn btn-primary" data-pizza-id="{{ pizza.id }}">Bestellen</button>
+        {% endblock %}
+        {% block pizzaAmount %}{{ pizzaAmount|default(0) }}{% endblock %}
+        {% block pizzaListEmpty %}Es gibt noch keine Pizzas{% endblock %}
+
+    {% endembed %}
+
+{% endblock %}

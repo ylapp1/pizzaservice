@@ -12,13 +12,10 @@ $amount = (int)$_GET["amount"];
 
 if (session_id() == "") session_start();
 
-if (! isset($_SESSION["orderPizzas"]))
-{
-    $_SESSION["orderPizzas"] = array($pizzaId => $amount);
-}
+if (! $_SESSION["orderPizzas"]) $_SESSION["orderPizzas"] = array($pizzaId => $amount);
 else
 {
-    if (! isset($_SESSION["orderPizzas"][$pizzaId])) $_SESSION["orderPizzas"][$pizzaId] = 0;
+    if (! $_SESSION["orderPizzas"][$pizzaId]) $_SESSION["orderPizzas"][$pizzaId] = 0;
 
     $_SESSION["orderPizzas"][$pizzaId] += $amount;
 }

@@ -13,20 +13,24 @@ $loader->addPsr4("PizzaService\\", __DIR__ . "/..");
 Propel::init(__DIR__ . "/../propel/conf/pizza_service-conf.php");
 
 
-use PizzaService\Lib\Web\LayoutHelper;
-use PizzaService\Lib\Web\PizzaListRenderers\PizzaListMenuCardRenderer;
+use PizzaService\Lib\Web\PizzaListConverter;
 use PizzaService\Propel\Models\PizzaQuery;
 
-$layoutHelper = new LayoutHelper();
-$pizzaListRenderer = new PizzaListMenuCardRenderer();
+$loader = new Twig_Loader_Filesystem(__DIR__ . "/templates");
+$twig = new Twig_Environment($loader);
 
-$layoutHelper->renderHead("pizzaMenuCard");
-$layoutHelper->renderHeader("pizza-menu");
+$pizzaListConverter = new PizzaListConverter();
 
+if (session_id() == "") session_start();
+if (! $_SESSION["orderPizzas"]) $_SESSION["orderPizzas"] = array();
 
 $pizzas = PizzaQuery::create()->orderByOrderCode()
                               ->find();
 
-echo $pizzaListRenderer->renderPizzaList($pizzas, "Es gibt noch keine Pizzas");
-
-$layoutHelper->renderFooter();
+$template = $twig->load("pizzaMenuCard.twig");
+echo $template->render(
+    array(
+        "totalAmountPizzas" => array_sum($_SESSION["orderPizzas"]),
+        "pizzas" => $pizzaListConverter->getPizzaList($pizzas)
+    )
+);

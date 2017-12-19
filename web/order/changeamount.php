@@ -11,16 +11,4 @@ $amount = (int)$_GET["amount"];
 
 
 if (session_id() == "") session_start();
-
-if (isset($_SESSION["orderPizzas"]))
-{
-    if (isset($_SESSION["orderPizzas"][$pizzaId])) $_SESSION["orderPizzas"][$pizzaId] = $amount;
-
-    $amountPizzas = 0;
-    foreach ($_SESSION["orderPizzas"] as $pizzaId => $amount)
-    {
-        $amountPizzas += $amount;
-    }
-
-    echo $amountPizzas;
-}
+if ($_SESSION["orderPizzas"][$pizzaId]) $_SESSION["orderPizzas"][$pizzaId] = $amount;

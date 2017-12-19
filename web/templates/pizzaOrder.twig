@@ -1,0 +1,33 @@
+{#
+ # @file
+ # @version 0.1
+ # @copyright 2017 CN-Consult GmbH
+ # @author Yannick Lapp <yannick.lapp@cn-consult.eu>
+ #}
+{% extends "base.twig" %}
+
+{# Head #}
+{% block pageTitle %}Bestellung{% endblock %}
+{% block pageJavaScript %}pizzaOrder.js{% endblock %}
+
+{# Navigation bar#}
+{% set pizzaOrderActive = true %}
+{% block totalAmountPizzas %}{{ totalAmountPizzas|default(0) }}{% endblock %}
+
+{# Main content #}
+{% block content %}
+
+    {# Table of pizzas in the order list #}
+    {% embed "blocks/pizzaTable.twig" %}
+
+        {% block actionButtonColumnTitle %}Anpassen{% endblock %}
+        {% block actionButton %}
+            <a class="btn btn-danger" href="?delete={{ pizza.id }}">Löschen</a>
+        {% endblock %}
+        {% block pizzaListEmpty %}Die Bestellung ist leer{% endblock %}
+
+    {% endembed %}
+
+    {% embed "blocks/addressInputField.twig" %}{% endembed %}
+
+{% endblock %}

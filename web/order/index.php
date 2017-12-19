@@ -13,30 +13,26 @@ $loader->addPsr4("PizzaService\\", __DIR__ . "/../..");
 Propel::init(__DIR__ . "/../../propel/conf/pizza_service-conf.php");
 
 
-use PizzaService\Lib\Web\LayoutHelper;
-use PizzaService\Lib\Web\PizzaListRenderers\PizzaListOrderRenderer;
+use PizzaService\Lib\Web\PizzaListConverter;
 use PizzaService\Propel\Models\PizzaQuery;
 
+$loader = new Twig_Loader_Filesystem(__DIR__ . "/../templates");
+$twig = new Twig_Environment($loader);
 
-if (isset($_GET["delete"]))
-{
-    if (session_id() == "") session_start();
+$pizzaListConverter = new PizzaListConverter();
 
-    unset($_SESSION["orderPizzas"][$_GET["delete"]]);
-}
-
-
-$layoutHelper = new LayoutHelper();
-$pizzaListRenderer = new PizzaListOrderRenderer();
-
-$layoutHelper->renderHead("pizzaOrder");
-$layoutHelper->renderHeader("pizza-order");
+if (session_id() == "") session_start();
+if (! $_SESSION["orderPizzas"]) $_SESSION["orderPizzas"] = array();
+if ($_GET["delete"]) unset($_SESSION["orderPizzas"][$_GET["delete"]]);
 
 $pizzaIds = array_keys($_SESSION["orderPizzas"]);
+$pizzas = PizzaQuery::create()->orderByOrderCode()
+                              ->findById($pizzaIds);
 
-$pizzas = PizzaQuery::create()->orderByOrderCode()->findById($pizzaIds);
-
-echo $pizzaListRenderer->renderPizzaList($pizzas, "Die Bestellung ist leer", $_SESSION["orderPizzas"]);
-echo file_get_contents(__DIR__ . "/../../web/templates/order/addressInputField.html");
-
-$layoutHelper->renderFooter();
+$template = $twig->load("pizzaOrder.twig");
+echo $template->render(
+    array(
+        "totalAmountPizzas" => array_sum($_SESSION["orderPizzas"]),
+        "pizzas" => $pizzaListConverter->getPizzaList($pizzas, $_SESSION["orderPizzas"])
+    )
+);
