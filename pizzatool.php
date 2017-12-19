@@ -12,6 +12,7 @@ $loader->addPsr4("PizzaService\\", __DIR__);
 // Initialize Propel with the runtime configuration
 Propel::init(__DIR__ . "/propel/conf/pizza_service-conf.php");
 
+use PizzaService\Cli\Commands\CompleteOrderCommand;
 use PizzaService\Cli\Commands\CreateIngredientCommand;
 use PizzaService\Cli\Commands\CreatePizzaCommand;
 use PizzaService\Cli\Commands\ListIngredientCommand;
@@ -21,9 +22,16 @@ use Symfony\Component\Console\Application;
 
 
 $application = new Application();
-$application->add(new CreateIngredientCommand());
-$application->add(new CreatePizzaCommand());
-$application->add(new ListIngredientCommand());
-$application->add(new ListOrderCommand());
-$application->add(new ListPizzaCommand());
+
+$application->addCommands(
+    array(
+        new CompleteOrderCommand(),
+        new CreateIngredientCommand(),
+        new CreatePizzaCommand(),
+        new ListIngredientCommand(),
+        new ListOrderCommand(),
+        new ListPizzaCommand()
+    )
+);
+
 $application->run();
