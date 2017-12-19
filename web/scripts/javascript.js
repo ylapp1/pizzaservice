@@ -17,14 +17,18 @@ $(document).ready(function(){
     messageText = message.find("p");
     pizzaCounter = $(".pizza-counter");
 
-    $(".close").on("click", function(){
-
-        message.hide();
-
-    });
+    $(".close").on("click", hideMessage);
 
 });
 
+
+/**
+ * Hides the message above the list of pizzas.
+ */
+function hideMessage()
+{
+    message.toggleClass("invisible");
+}
 
 /**
  * Shows a message above the list of pizzas.

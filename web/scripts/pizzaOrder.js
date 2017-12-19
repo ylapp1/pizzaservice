@@ -48,7 +48,7 @@ $(document).ready(function(){
     });
 
 
-    $(".pizza-table input").on("click", function(){
+    pizzaTableBody.find("input").on("click", function(){
 
         $(this).data('val', $(this).val());
 

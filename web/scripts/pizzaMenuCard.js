@@ -37,4 +37,21 @@ $(document).ready(function(){
 
     });
 
+
+    var inputFields = $(".pizza-table input");
+
+    // Automatically reset all other input fields when a input field is focused or changed
+    inputFields.on("focusin change", function(){
+
+        // Backup the value of the changed/focused input field
+        var value = $(this).val();
+
+        // Change the value of all input fields to 0
+        inputFields.val(0);
+
+        // Change the value of this input field back to its original value
+        $(this).val(value);
+
+    });
+
 });
