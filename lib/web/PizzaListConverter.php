@@ -33,7 +33,7 @@ class PizzaListConverter
             $outputPizza = array(
                 "orderCode" => $pizza->getOrderCode(),
                 "name" => $pizza->getName(),
-                "price" => number_format($pizza->getPrice(), 2) . " €",
+                "price" => $pizza->getPrice(),
                 "pizzaIngredients" => $this->generateIngredientsString($pizza->getPizzaIngredients()),
                 "amount" => $amount,
                 "id" => $pizza->getId()

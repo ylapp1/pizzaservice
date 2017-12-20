@@ -29,7 +29,7 @@
     {% endembed %}
 
     <hr>
-    <p class="text-right totalPrice">Gesamt: <span>{{ totalPrice|default(0) }}</span> €</p>
+    <p class="text-right totalPrice">Gesamt: <span>{{ totalPrice|default(0)|number_format(2, ".", "") }}</span> €</p>
 
     {% embed "blocks/addressInputField.twig" %}{% endembed %}
 

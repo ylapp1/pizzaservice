@@ -97,5 +97,5 @@ function getTotalPrice()
  */
 function setTotalPrice(_totalPrice)
 {
-    totalPrice.text(_totalPrice);
+    totalPrice.text(_totalPrice.toFixed(2));
 }

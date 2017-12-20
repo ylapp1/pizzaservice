@@ -23,7 +23,7 @@
             <tr>
                 <td>{{ pizza.orderCode }}</td>
                 <td>{{ pizza.name }}</td>
-                <td>{{ pizza.price }}</td>
+                <td>{{ pizza.price|number_format(2, ".", "") }} €</td>
                 <td>{{ pizza.pizzaIngredients }}</td>
                 <td>
                     <form class="form-inline pizza-action">
