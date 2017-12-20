@@ -24,11 +24,11 @@ class CompleteOrderCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('complete:order')
-            ->setDescription('Completes an uncompleted order.')
-            ->setHelp('This command completes an order if it is uncompleted.')
+        $this->setName("complete:order")
+            ->setDescription("Completes an uncompleted order.")
+            ->setHelp("This command completes an order if it is uncompleted.")
 
-            ->addArgument('order-id', InputArgument::REQUIRED, "The id of the order");
+            ->addArgument("order-id", InputArgument::REQUIRED, "The id of the order");
     }
 
     /**

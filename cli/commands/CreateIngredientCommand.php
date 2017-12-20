@@ -25,9 +25,9 @@ class CreateIngredientCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('create:ingredient')
-             ->setDescription('Adds a new ingredient to the database.')
-             ->setHelp('This command allows you to add a new ingredient to the database.');
+        $this->setName("create:ingredient")
+             ->setDescription("Adds a new ingredient to the database.")
+             ->setHelp("This command allows you to add a new ingredient to the database.");
     }
 
     /**

@@ -8,6 +8,8 @@
 
 namespace PizzaService\Lib\Web;
 
+use PizzaService\Lib\IngredientListConverter;
+
 /**
  * Converts a Propel Collection of Pizza Objects to an array that can be used to fill the twig template.
  */
@@ -23,6 +25,7 @@ class PizzaListConverter
      */
     public function getPizzaList($_pizzas, array $_amounts = null): array
     {
+        $ingredientListConverter = new IngredientListConverter();
         $outputPizzas = array();
 
         foreach ($_pizzas as $pizza)
@@ -34,7 +37,7 @@ class PizzaListConverter
                 "orderCode" => $pizza->getOrderCode(),
                 "name" => $pizza->getName(),
                 "price" => $pizza->getPrice(),
-                "pizzaIngredients" => $this->generateIngredientsString($pizza->getPizzaIngredients()),
+                "pizzaIngredients" => $ingredientListConverter->pizzaIngredientsToString($pizza->getPizzaIngredients()),
                 "amount" => $amount,
                 "id" => $pizza->getId()
             );
@@ -43,33 +46,5 @@ class PizzaListConverter
         }
 
         return $outputPizzas;
-    }
-
-    /**
-     * Creates a comma separated string from a list of pizza ingredients.
-     *
-     * @param \PizzaService\Propel\Models\PizzaIngredient[] $_ingredients List of ingredients
-     *
-     * @return String The list of ingredients as a string
-     */
-    private function generateIngredientsString($_ingredients): String
-    {
-        $ingredientsString = "";
-        $isFirstEntry = true;
-
-        foreach ($_ingredients as $pizzaIngredient)
-        {
-            if ($pizzaIngredient instanceOf \PizzaService\Propel\Models\PizzaIngredient)
-            {
-                $ingredient = $pizzaIngredient->getIngredient();
-
-                if ($isFirstEntry) $isFirstEntry = false;
-                else $ingredientsString .= ", ";
-
-                $ingredientsString .= $ingredient->getName() . " (" . $pizzaIngredient->getGrams() . "g)";
-            }
-        }
-
-        return $ingredientsString;
     }
 }

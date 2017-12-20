@@ -24,9 +24,9 @@ class ListIngredientCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('list:ingredient')
-             ->setDescription('Shows a list of all ingredients.')
-             ->setHelp('This command shows a complete list of all ingredients that are currently stored in the database.');
+        $this->setName("list:ingredient")
+             ->setDescription("Shows a list of all ingredients.")
+             ->setHelp("This command shows a complete list of all ingredients that are currently stored in the database.");
     }
 
     /**

@@ -28,9 +28,9 @@ class CreatePizzaCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('create:pizza')
-             ->setDescription('Adds a new pizza to the database.')
-             ->setHelp('This command allows you to add a new pizza to the database.');
+        $this->setName("create:pizza")
+             ->setDescription("Adds a new pizza to the database.")
+             ->setHelp("This command allows you to add a new pizza to the database.");
     }
 
     /**

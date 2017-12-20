@@ -8,8 +8,10 @@
 
 namespace PizzaService\Cli\Commands;
 
+use PizzaService\Lib\IngredientListConverter;
 use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\PizzaQuery;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
@@ -24,9 +26,9 @@ class ListPizzaCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('list:pizza')
-             ->setDescription('Shows a list of all pizzas.')
-             ->setHelp('This command shows a complete list of all pizzas that are currently stored in the database.');
+        $this->setName("list:pizza")
+             ->setDescription("Shows a list of all pizzas.")
+             ->setHelp("This command shows a complete list of all pizzas that are currently stored in the database.");
     }
 
     /**
@@ -45,23 +47,25 @@ class ListPizzaCommand extends Command
         if ($amountPizzas == 0) $_output->writeln("\nThere are no pizzas yet\n");
         else
         {
+            $ingredientListConverter = new IngredientListConverter();
             $_output->writeln("\nThe available pizzas are:\n");
+
+            $table = new Table($_output);
+            $table->setHeaders(array("Order Code", "Pizza Name", "Price", "Ingredients"));
 
             foreach ($pizzas as $pizza)
             {
-                $_output->writeln(" " . $pizza->getOrderCode() . ". " . $pizza->getName());
+                $row = array(
+                    $pizza->getOrderCode(),
+                    $pizza->getName(),
+                    number_format($pizza->getPrice(), 2) . " €",
+                    $ingredientListConverter->pizzaIngredientsToString($pizza->getPizzaIngredients())
+                );
 
-                foreach ($pizza->getPizzaIngredients() as $pizzaIngredient)
-                {
-                    if ($pizzaIngredient instanceOf \PizzaService\Propel\Models\PizzaIngredient)
-                    {
-                        $ingredient = $pizzaIngredient->getIngredient();
-                        $_output->writeln("  * " . $ingredient->getName() . " (" . $pizzaIngredient->getGrams() . "g)");
-                    }
-                }
-
-                $_output->writeln("");
+                $table->addRow($row);
             }
+
+            $table->render();
         }
     }
 }

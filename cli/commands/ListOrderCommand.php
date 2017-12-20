@@ -26,11 +26,11 @@ class ListOrderCommand extends Command
      */
     protected function configure()
     {
-        $this->setName('list:order')
-             ->setDescription('Shows a list of all orders.')
-             ->setHelp('This command shows a complete list of all orders that are currently stored in the database.')
+        $this->setName("list:order")
+             ->setDescription("Shows a list of all orders.")
+             ->setHelp("This command shows a complete list of all orders that are currently stored in the database.")
 
-            ->addOption('include-completed', "a", InputOption::VALUE_NONE, "Shows all orders including completed ones");
+            ->addOption("include-completed", "a", InputOption::VALUE_NONE, "Shows all orders including completed ones");
     }
 
     /**
