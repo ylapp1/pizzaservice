@@ -23,7 +23,7 @@ $(document).ready(function(){
         else
         {
             // Add pizza to order list
-            $.ajax({url: "addpizzatoorder.php?pizza-id=" + button.data("pizza-id") + "&amount=" + amount,
+            $.ajax({url: "web/addpizzatoorder.php?pizza-id=" + button.data("pizza-id") + "&amount=" + amount,
                 type: "get",
                 dataType: "text",
                 success: function(_error){

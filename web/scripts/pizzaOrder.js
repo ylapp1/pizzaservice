@@ -15,7 +15,7 @@ $(document).ready(function(){
     // Event handler for the order button
     $(".address-input-field button").on("click", function(){
 
-        var urlString = "/web/order/process?";
+        var urlString = "web/order/process?";
         var isFirstEntry = true;
 
         $(this).parent().parent().find("input").each(function(index, input){
@@ -59,7 +59,7 @@ $(document).ready(function(){
 
         var pizzaId = deleteLink.match(/.*delete=([0-9]).*/)[1];
 
-        $.ajax({url: "/web/order/changeamount.php?pizza-id=" + pizzaId + "&amount=" + input.val(),
+        $.ajax({url: "web/order/changeamount.php?pizza-id=" + pizzaId + "&amount=" + input.val(),
             type: "get",
             dataType: "text",
             success: function(_error)

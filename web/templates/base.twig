@@ -10,20 +10,21 @@
     <head>
         <meta charset="UTF-8">
         <title>PizzaService - {% block pageTitle %}{% endblock %}</title>
+        <base href="{% block basePath %}{% endblock %}">
 
         {# JQuery #}
-        <script src="/vendor/components/jquery/jquery.js"></script>
+        <script src="vendor/components/jquery/jquery.js"></script>
 
         {# Bootstrap #}
-        <link href="/vendor/twbs/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
-        <script src="/vendor/twbs/bootstrap/dist/js/bootstrap.js"></script>
+        <link href="vendor/twbs/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+        <script src="vendor/twbs/bootstrap/dist/js/bootstrap.js"></script>
 
         {# Custom styles #}
-        <link href="/web/style/style.css" rel="stylesheet">
+        <link href="web/style/style.css" rel="stylesheet">
 
         {# Custom javascript #}
-        <script src="/web/scripts/javascript.js"></script>
-        <script src="/web/scripts/{% block pageJavaScript %}{% endblock %}"></script>
+        <script src="web/scripts/javascript.js"></script>
+        <script src="web/scripts/{% block pageJavaScript %}{% endblock %}"></script>
 
     </head>
 
@@ -33,18 +34,18 @@
 
             <div class="navbar navbar-default navbar-static-top">
 
-                <a href="/web/index.php" class="navbar-brand">PizzaService</a>
+                <a href="web/index.php" class="navbar-brand">PizzaService</a>
 
                 <ul class="nav navbar-nav nav-pills">
 
                     <li class="{% if pizzaMenuCardActive %}active{% endif %}">
-                        <a href="/web/index.php">Pizzakarte</a>
+                        <a href="web/index.php">Pizzakarte</a>
                     </li>
 
                     <li class="{% if pizzaOrderActive %}active{% endif %}">
-                        <a href="/web/order">
+                        <a href="web/order">
                             Bestellung
-                            <sup class="pizza-counter">{% block totalAmountPizzas %}{% endblock %}</sup>
+                            <sup class="pizza-counter">{{ totalAmountPizzas|default(0) }}</sup>
                         </a>
                     </li>
 

@@ -9,10 +9,10 @@
 {# Head #}
 {% block pageTitle %}Pizzakarte{% endblock %}
 {% block pageJavaScript %}pizzaMenuCard.js{% endblock %}
+{% block basePath %}../{% endblock %}
 
 {# Navigation bar#}
 {% set pizzaMenuCardActive = true %}
-{% block totalAmountPizzas %}{{ totalAmountPizzas|default(0) }}{% endblock %}
 
 {# Main content #}
 {% block content %}

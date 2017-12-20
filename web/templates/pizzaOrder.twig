@@ -9,10 +9,10 @@
 {# Head #}
 {% block pageTitle %}Bestellung{% endblock %}
 {% block pageJavaScript %}pizzaOrder.js{% endblock %}
+{% block basePath %}../../{% endblock %}
 
 {# Navigation bar#}
 {% set pizzaOrderActive = true %}
-{% block totalAmountPizzas %}{{ totalAmountPizzas|default(0) }}{% endblock %}
 
 {# Main content #}
 {% block content %}
@@ -22,7 +22,7 @@
 
         {% block actionButtonColumnTitle %}Anpassen{% endblock %}
         {% block actionButton %}
-            <a class="btn btn-danger" href="?delete={{ pizza.id }}">Löschen</a>
+            <a class="btn btn-danger" href="web/order?delete={{ pizza.id }}">Löschen</a>
         {% endblock %}
         {% block pizzaListEmpty %}Die Bestellung ist leer{% endblock %}
 
