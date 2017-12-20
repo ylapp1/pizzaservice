@@ -40,6 +40,7 @@ $(document).ready(function(){
                     pizzaTableBody.find("tr").remove();
                     pizzaTableBody.append("<tr><td colspan=\"6\" class=\"text-center\">Die Bestellung ist leer</td></tr>");
                     setPizzaCount(0);
+                    setTotalPrice(0);
                 }
                 else showErrorMessage(_text.replace("Fehler: ", ""));
             },
@@ -51,11 +52,7 @@ $(document).ready(function(){
     });
 
 
-    pizzaTableBody.find("input").on("click", function(){
-
-        $(this).data('val', $(this).val());
-
-    }).on("change", function(){
+    pizzaTableBody.find("input").on("change", function(){
 
         var input = $(this);
         var deleteLink = input.parent().find("a").attr("href");
@@ -64,18 +61,32 @@ $(document).ready(function(){
 
         $.ajax({url: "/web/order/changeamount.php?pizza-id=" + pizzaId + "&amount=" + input.val(),
             type: "get",
-            dataType: "text"
+            dataType: "text",
+            success: function(_error)
+            {
+                var previousValue = Number(input.data('val'));
+
+                if (_error !== "")
+                {
+                    showErrorMessage(_error);
+                    input.val(previousValue);
+                }
+                else
+                {
+                    hideMessage();
+                    var currentValue = Number(input.val());
+                    var difference = currentValue - previousValue;
+
+                    // Update the pizza counter
+                    setPizzaCount(getPizzaCount() + difference);
+
+                    var price = parseFloat(input.parents().eq(2).find("td:nth-child(3)").text());
+                    setTotalPrice(getTotalPrice() + (difference * price));
+
+                    input.data("val", currentValue);
+                }
+            }
         });
-
-        var previousValue = Number(input.data('val'));
-        var currentValue = Number(input.val());
-        var difference = currentValue - previousValue;
-
-        // Update the pizza counter
-        setPizzaCount(getPizzaCount() + difference);
-
-        var price = parseFloat(input.parents().eq(2).find("td:nth-child(3)").text());
-        setTotalPrice(getTotalPrice() + (difference * price));
     });
 
 });

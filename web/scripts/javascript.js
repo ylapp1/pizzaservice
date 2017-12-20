@@ -27,7 +27,7 @@ $(document).ready(function(){
  */
 function hideMessage()
 {
-    message.toggleClass("invisible");
+    message.addClass("invisible");
 }
 
 /**

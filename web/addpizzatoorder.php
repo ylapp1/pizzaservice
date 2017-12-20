@@ -17,5 +17,13 @@ else
 {
     if (! $_SESSION["orderPizzas"][$pizzaId]) $_SESSION["orderPizzas"][$pizzaId] = 0;
 
-    $_SESSION["orderPizzas"][$pizzaId] += $amount;
+    if ($_SESSION["orderPizzas"][$pizzaId] + $amount > 50)
+    {
+        echo "Es dürfen nicht mehr als 50 Stück je Pizza in der Bestellung vorhanden sein.";
+    }
+    elseif (array_sum($_SESSION["orderPizzas"]) + $amount > 100)
+    {
+        echo "Es dürfen nicht mehr als 100 Pizzen auf einmal bestellt werden.";
+    }
+    else $_SESSION["orderPizzas"][$pizzaId] += $amount;
 }
