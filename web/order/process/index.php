@@ -17,6 +17,7 @@ use PizzaService\Propel\Models\Customer;
 use PizzaService\Propel\Models\CustomerQuery;
 use PizzaService\Propel\Models\Order;
 use PizzaService\Propel\Models\PizzaOrder;
+use PizzaService\Propel\Models\PizzaQuery;
 
 // Inserts the order into the database
 if (session_id() == "") session_start();
@@ -51,6 +52,30 @@ $customer = CustomerQuery::create()->filterByFirstName($_GET["firstName"])
 
 if (! $customer)
 { // Create a new customer if customer did not exist in the database
+
+    // Check whether any value is empty
+    if ($_GET["firstName"] == "" ||
+        $_GET["lastName"] == "" ||
+        $_GET["streetName"] == "" ||
+        $_GET["houseNumber"] == "" ||
+        $_GET["zip"] == "" ||
+        $_GET["city"] == "")
+    {
+        echo "Fehler: Ein oder mehrere Felder sind leer";
+    }
+
+    // Check whether the numbers are integers
+    if (intval($_GET["houseNumber"]) != $_GET["houseNumber"])
+    {
+        echo "Fehler: Die Hausnummer muss eine Ganzzahl sein";
+        return;
+    }
+    else if (intval($_GET["zip"]) != $_GET["zip"])
+    {
+        echo "Fehler: Die Postleitzahl muss eine Ganzzahl sein";
+        return;
+    }
+
     $customer = new Customer();
     $customer->setFirstName($_GET["firstName"])
              ->setLastName($_GET["lastName"])
@@ -58,7 +83,7 @@ if (! $customer)
              ->setHouseNumber((int)$_GET["houseNumber"])
              ->setZip((int)$_GET["zip"])
              ->setCity($_GET["city"])
-             ->setCountry("Germany");
+             ->setCountry("Deutschland");
 }
 
 
@@ -75,11 +100,18 @@ catch (Exception $_exception)
 }
 
 // Add pizza orders
-
 foreach ($_SESSION["orderPizzas"] as $pizzaId => $amount)
 {
+    $pizza = PizzaQuery::create()->findOneById($pizzaId);
+
+    if (! $pizza)
+    {
+        echo "Fehler: Ungültige Pizza ID in der Bestellung";
+        return;
+    }
+
     $pizzaOrder = new PizzaOrder();
-    $pizzaOrder->setPizzaId($pizzaId)
+    $pizzaOrder->setPizza($pizza)
                ->setAmount($amount);
 
     $order->addPizzaOrder($pizzaOrder);
