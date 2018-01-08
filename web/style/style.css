@@ -14,6 +14,16 @@ div#message {
     margin-bottom: 20px;
 }
 
+/* Hide the spinner buttons for number inputs in the address input field in firefox */
+.address-input-field input[type=number]::-webkit-outer-spin-button,
+.address-input-field input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.address-input-field input[type=number] {
+    -moz-appearance:textfield;
+}
+
 
 /* /web/order/index.php */
 .totalPrice {

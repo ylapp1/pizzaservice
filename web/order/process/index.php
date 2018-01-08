@@ -20,7 +20,11 @@ use PizzaService\Propel\Models\PizzaOrder;
 
 // Inserts the order into the database
 if (session_id() == "") session_start();
-if (! $_SESSION["orderPizzas"]) return;
+if (! $_SESSION["orderPizzas"])
+{
+    echo "Fehler: Die Bestellung ist leer.";
+    return;
+}
 
 
 $amountPizzas = 0;

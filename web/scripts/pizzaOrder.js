@@ -23,10 +23,20 @@ $(document).ready(function(){
             if (isFirstEntry) isFirstEntry = false;
             else urlString += "&";
 
-            urlString += $(input).attr("name") + "=\"" + $(input).val() + "\"";
+            var inputValue = $(input).val();
+
+            if (inputValue === "")
+            {
+                showErrorMessage("Bitte alle Felder ausfüllen!");
+                urlString = false;
+                return;
+            }
+
+            urlString += $(input).attr("name") + "=\"" + inputValue + "\"";
 
         });
 
+        if (! urlString) return;
 
         // Add pizza to order list
         $.ajax({url: urlString,
@@ -48,6 +58,9 @@ $(document).ready(function(){
                 showErrorMessage("An AJAX error occured: " + status + ": " + error);
             }
         });
+
+        // Prevent the form from being submitted by HTML
+        return false;
 
     });
 
