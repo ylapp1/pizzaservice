@@ -82,3 +82,6 @@ sed -i "/bind-address/s/^/#/" /etc/mysql/mysql.conf.d/mysqld.cnf
 
 # Restart mysql server in order to use the updated configuration
 service mysql restart
+
+# Restart apache
+service apache2 restart
