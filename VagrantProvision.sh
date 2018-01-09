@@ -25,7 +25,7 @@ packages=(
   #git
 
   # Pear
-  #php-pear
+  php-pear
 )
 
 apt-get update
@@ -64,8 +64,8 @@ chmod a+x composer
 cd
 
 # Install propel dependencies
-#pear channel-discover pear.phing.info
-#pear install phing/phing
+pear channel-discover pear.phing.info
+pear install phing/phing
 #pear install Log
 
 
