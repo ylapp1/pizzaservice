@@ -22,10 +22,10 @@ packages=(
   mysql-server
 
   # Git
-  git
+  #git
 
   # Pear
-  php-pear
+  #php-pear
 )
 
 apt-get update
@@ -64,9 +64,9 @@ chmod a+x composer
 cd
 
 # Install propel dependencies
-pear channel-discover pear.phing.info
-pear install phing/phing
-pear install Log
+#pear channel-discover pear.phing.info
+#pear install phing/phing
+#pear install Log
 
 
 # Initialize Database
@@ -82,6 +82,16 @@ sed -i "/bind-address/s/^/#/" /etc/mysql/mysql.conf.d/mysqld.cnf
 
 # Restart mysql server in order to use the updated configuration
 service mysql restart
+
+
+# Configure apache for silex
+a2enmod rewrite
+
+# Replacing AllowOverride None with AllowOverride All for the directory /var/www
+#
+# https://stackoverflow.com/questions/14764609/sed-replace-in-large-text/14764806
+#
+sed -i "/<Directory \/var\/www\/>/,/AllowOverride/s/AllowOverride None/AllowOverride All/" /etc/apache2/apache2.conf
 
 # Restart apache
 service apache2 restart

@@ -2,7 +2,7 @@
 /**
  * @file
  * @version 0.1
- * @copyright 2017 CN-Consult GmbH
+ * @copyright 2017-2018 CN-Consult GmbH
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
@@ -12,25 +12,44 @@ $loader->addPsr4("PizzaService\\", __DIR__ . "/..");
 // Initialize Propel with the runtime configuration
 Propel::init(__DIR__ . "/../propel/conf/pizza_service-conf.php");
 
+use Silex\Application;
+use PizzaService\Lib\Web\App\Controller\PizzaMenuCardController;
+use PizzaService\Lib\Web\App\Controller\PizzaOrderController;
+use PizzaService\Lib\Web\App\Controller\PizzaOrderProcessController;
 
-use PizzaService\Lib\Web\PizzaListConverter;
-use PizzaService\Propel\Models\PizzaQuery;
+$app = new Application();
+$app->register(new Silex\Provider\TwigServiceProvider(), array(
+    "twig.path" => __DIR__ . "/templates",
+));
 
-$loader = new Twig_Loader_Filesystem(__DIR__ . "/templates");
-$twig = new Twig_Environment($loader);
+$pizzaMenuCardController = new PizzaMenuCardController($app["twig"]);
+$pizzaOrderController = new PizzaorderController($app["twig"]);
+$pizzaOrderProcessController = new PizzaOrderProcessController();
 
-$pizzaListConverter = new PizzaListConverter();
+// Register routes
 
-if (session_id() == "") session_start();
-if (! $_SESSION["orderPizzas"]) $_SESSION["orderPizzas"] = array();
+// Pizza menu card page
+$pizzaMenuCard = $app["controllers_factory"];
+$pizzaMenuCard->get("/", function() use($pizzaMenuCardController) {
+    return $pizzaMenuCardController->showPizzaMenuCard();
+});
+$pizzaMenuCard->get("/addpizzatoorder.php", function() use($pizzaMenuCardController) {
+    return $pizzaMenuCardController->addPizzaToOrder();
+});
 
-$pizzas = PizzaQuery::create()->orderByOrderCode()
-                              ->find();
+// Pizza order page
+$pizzaOrder = $app["controllers_factory"];
+$pizzaOrder->get("/", function() use($pizzaOrderController) {
+    return $pizzaOrderController->showPizzaOrder();
+});
+$pizzaOrder->get("/changeamount.php", function() use($pizzaOrderController) {
+    return $pizzaOrderController->changeAmount();
+});
+$pizzaOrder->get("/process/", function() use($pizzaOrderProcessController){
+    return $pizzaOrderProcessController->addOrder();
+});
 
-$template = $twig->load("pizzaMenuCard.twig");
-echo $template->render(
-    array(
-        "totalAmountPizzas" => array_sum($_SESSION["orderPizzas"]),
-        "pizzas" => $pizzaListConverter->getPizzaList($pizzas)
-    )
-);
+$app->mount("/", $pizzaMenuCard);
+$app->mount("/order/", $pizzaOrder);
+
+$app->run();

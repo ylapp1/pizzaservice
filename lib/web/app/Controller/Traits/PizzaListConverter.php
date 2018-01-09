@@ -2,31 +2,31 @@
 /**
  * @file
  * @version 0.1
- * @copyright 2017 CN-Consult GmbH
+ * @copyright 2018 CN-Consult GmbH
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
-namespace PizzaService\Lib\Web;
+namespace PizzaService\Lib\Web\App\Controller\Traits;
 
 use PizzaService\Lib\IngredientListConverter;
 
 /**
- * Converts a Propel Collection of Pizza Objects to an array that can be used to fill the twig template.
+ * Converts a Propel Collection of Pizza Objects to an array that can be used to fill the twig templates.
  */
-class PizzaListConverter
+trait PizzaListConverter
 {
     /**
-     * Generates and returns the associative array for the twig template.
+     * Generates and returns an array of pizza data for the twig templates.
      *
      * @param \PizzaService\Propel\Models\Pizza[] $_pizzas List of pizzas
      * @param int[] $_amounts List of amounts per pizza
      *
-     * @return array
+     * @return array The template array
      */
-    public function getPizzaList($_pizzas, array $_amounts = null): array
+    public function getTemplateArray($_pizzas, array $_amounts = null): array
     {
         $ingredientListConverter = new IngredientListConverter();
-        $outputPizzas = array();
+        $templateArray = array();
 
         foreach ($_pizzas as $pizza)
         {
@@ -42,9 +42,9 @@ class PizzaListConverter
                 "id" => $pizza->getId()
             );
 
-            $outputPizzas[] = $outputPizza;
+            $templateArray[] = $outputPizza;
         }
 
-        return $outputPizzas;
+        return $templateArray;
     }
 }

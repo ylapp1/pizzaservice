@@ -4,7 +4,8 @@
         "symfony/console": "^3.4",
         "twbs/bootstrap": "^3.3",
         "components/jquery": "^3.2",
-        "twig/twig": "^2.0"
+        "twig/twig": "^2.0",
+        "silex/silex": "^2.2"
     },
 
     "scripts": {
