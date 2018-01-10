@@ -104,6 +104,8 @@ class PizzaOrderProcessController
      * Checks whether every order value is valid.
      *
      * @return String|bool Error message or false
+     *
+     * @throws \PropelException
      */
     private function validateOrder()
     {

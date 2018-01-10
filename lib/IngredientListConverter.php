@@ -19,6 +19,8 @@ class IngredientListConverter
      * @param \PizzaService\Propel\Models\PizzaIngredient[] $_pizzaIngredients List of ingredients
      *
      * @return String The list of ingredients as a string
+     *
+     * @throws \PropelException
      */
     public function pizzaIngredientsToString($_pizzaIngredients): String
     {

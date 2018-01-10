@@ -22,6 +22,8 @@ trait PizzaListConverter
      * @param int[] $_amounts List of amounts per pizza
      *
      * @return array The template array
+     *
+     * @throws \PropelException
      */
     public function getTemplateArray($_pizzas, array $_amounts = null): array
     {
