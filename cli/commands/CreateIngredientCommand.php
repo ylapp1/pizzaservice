@@ -35,6 +35,9 @@ class CreateIngredientCommand extends Command
      *
      * @param InputInterface $_input The input interface
      * @param OutputInterface $_output The output interface
+     *
+     * @throws \Exception
+     * @throws \PropelException
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {

@@ -20,9 +20,7 @@ use PizzaService\Cli\Commands\ListOrderCommand;
 use PizzaService\Cli\Commands\ListPizzaCommand;
 use Symfony\Component\Console\Application;
 
-
 $application = new Application();
-
 $application->addCommands(
     array(
         new CompleteOrderCommand(),
@@ -33,5 +31,4 @@ $application->addCommands(
         new ListPizzaCommand()
     )
 );
-
 $application->run();

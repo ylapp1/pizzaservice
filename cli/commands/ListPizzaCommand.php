@@ -36,15 +36,16 @@ class ListPizzaCommand extends Command
      *
      * @param InputInterface $_input The input interface
      * @param OutputInterface $_output The output interface
+     *
+     * @throws \PropelException
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
         /** @var Pizza[] $pizzas */
         $pizzas = PizzaQuery::create()->orderByOrderCode()
                                       ->find();
-        $amountPizzas = count($pizzas);
 
-        if ($amountPizzas == 0) $_output->writeln("\nThere are no pizzas yet\n");
+        if (count($pizzas) == 0) $_output->writeln("\nThere are no pizzas yet\n");
         else
         {
             $ingredientListConverter = new IngredientListConverter();

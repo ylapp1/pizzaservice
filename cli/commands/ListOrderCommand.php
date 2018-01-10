@@ -38,6 +38,8 @@ class ListOrderCommand extends Command
      *
      * @param InputInterface $_input The input interface
      * @param OutputInterface $_output The output interface
+     *
+     * @throws \PropelException
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
@@ -52,39 +54,42 @@ class ListOrderCommand extends Command
         $orders = $orderQuery->orderById()
                              ->find();
 
-
-        $table = new Table($_output);
-        $table->setHeaders(array("Order ID", "Customer Id", "Created at", "Completed at", "Pizzas"));
-
-        $counter = 0;
-        foreach ($orders as $order)
+        if (count($orders) == 0) $_output->writeln("\nThere are no orders\n");
+        else
         {
-            $pizzaListString = "";
+            $table = new Table($_output);
+            $table->setHeaders(array("Order ID", "Customer Id", "Created at", "Completed at", "Pizzas"));
 
-            // Generate the pizza list string
-            $isFirstEntry = true;
-            foreach ($order->getPizzaOrders() as $pizzaOrder)
+            $counter = 0;
+            foreach ($orders as $order)
             {
-                if ($isFirstEntry) $isFirstEntry = false;
-                else $pizzaListString .= ", ";
+                $pizzaListString = "";
 
-                $pizzaListString .= $pizzaOrder->getAmount() . "x " . $pizzaOrder->getPizza()->getName();
+                // Generate the pizza list string
+                $isFirstEntry = true;
+                foreach ($order->getPizzaOrders() as $pizzaOrder)
+                {
+                    if ($isFirstEntry) $isFirstEntry = false;
+                    else $pizzaListString .= ", ";
+
+                    $pizzaListString .= $pizzaOrder->getAmount() . "x " . $pizzaOrder->getPizza()->getName();
+                }
+
+                // Initialize the row data
+                $row = array(
+                    $order->getId(),
+                    $order->getCustomerId(),
+                    $order->getCreatedAt(),
+                    $order->getCompletedAt(),
+                    $pizzaListString
+                );
+
+                // Insert the row into the table
+                $table->setRow($counter, $row);
+                $counter ++;
             }
 
-            // Initialize the row data
-            $row = array(
-                $order->getId(),
-                $order->getCustomerId(),
-                $order->getCreatedAt(),
-                $order->getCompletedAt(),
-                $pizzaListString
-            );
-
-            // Insert the row into the table
-            $table->setRow($counter, $row);
-            $counter ++;
+            $table->render();
         }
-
-        $table->render();
     }
 }

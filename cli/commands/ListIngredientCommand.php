@@ -42,7 +42,7 @@ class ListIngredientCommand extends Command
                                                 ->find();
         $amountIngredients = count($ingredients);
 
-        if ($amountIngredients == 0) $_output->writeln("There are no ingredients yet");
+        if ($amountIngredients == 0) $_output->writeln("\nThere are no ingredients yet\n");
         else
         {
             $_output->writeln("\nThe available ingredients are:\n");

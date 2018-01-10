@@ -36,6 +36,9 @@ class CompleteOrderCommand extends Command
      *
      * @param InputInterface $_input The input interface
      * @param OutputInterface $_output The output interface
+     *
+     * @throws \Exception
+     * @throws \PropelException
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
@@ -50,7 +53,7 @@ class CompleteOrderCommand extends Command
 
         if ($order->getCompletedAt() !== null)
         {
-            $_output->writeln("Error: This order is already complete!");
+            $_output->writeln("Error: This order has already been completed!");
             return;
         }
 

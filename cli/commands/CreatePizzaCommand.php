@@ -39,6 +39,9 @@ class CreatePizzaCommand extends Command
      *
      * @param InputInterface $_input The input interface
      * @param OutputInterface $_output The output interface
+     *
+     * @throws \Exception
+     * @throws \PropelException
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
@@ -124,6 +127,8 @@ class CreatePizzaCommand extends Command
      * @param String[] $_ingredientNames The ingredient names
      *
      * @return Pizza|bool The updated Pizza object or false
+     *
+     * @throws \PropelException
      */
     private function promptIngredients(InputInterface $_input, OutputInterface $_output, Pizza $_pizza, array $_ingredientNames)
     {
