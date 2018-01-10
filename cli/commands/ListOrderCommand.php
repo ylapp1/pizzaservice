@@ -11,6 +11,7 @@ namespace PizzaService\Cli\Commands;
 use PizzaService\Propel\Models\Order;
 use PizzaService\Propel\Models\OrderQuery;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -58,21 +59,24 @@ class ListOrderCommand extends Command
         else
         {
             $table = new Table($_output);
-            $table->setHeaders(array("Order ID", "Customer Id", "Created at", "Completed at", "Pizzas"));
+            $table->setHeaders(array("Order ID", "Customer Id", "Created at", "Completed at", "Pizzas", "Total"));
 
-            $counter = 0;
+            $counter = 1;
             foreach ($orders as $order)
             {
                 $pizzaListString = "";
+                $totalPrice = 0;
 
                 // Generate the pizza list string
                 $isFirstEntry = true;
                 foreach ($order->getPizzaOrders() as $pizzaOrder)
                 {
                     if ($isFirstEntry) $isFirstEntry = false;
-                    else $pizzaListString .= ", ";
+                    else $pizzaListString .= "\n";
 
                     $pizzaListString .= $pizzaOrder->getAmount() . "x " . $pizzaOrder->getPizza()->getName();
+
+                    $totalPrice += $pizzaOrder->getPizza()->getPrice() * $pizzaOrder->getAmount();
                 }
 
                 // Initialize the row data
@@ -81,12 +85,18 @@ class ListOrderCommand extends Command
                     $order->getCustomerId(),
                     $order->getCreatedAt(),
                     $order->getCompletedAt(),
-                    $pizzaListString
+                    $pizzaListString,
+                    number_format($totalPrice, 2) . " €"
                 );
 
                 // Insert the row into the table
-                $table->setRow($counter, $row);
-                $counter ++;
+                $table->addRow($row);
+
+                if ($counter != count($orders))
+                {
+                    $table->addRow(new TableSeparator());
+                    $counter ++;
+                }
             }
 
             $table->render();
