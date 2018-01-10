@@ -2,7 +2,7 @@
 /**
  * @file
  * @version 0.1
- * @copyright 2017 CN-Consult GmbH
+ * @copyright 2017-2018 CN-Consult GmbH
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
@@ -10,6 +10,8 @@ namespace PizzaService\Cli\Commands;
 
 use PizzaService\Propel\Models\Ingredient;
 use PizzaService\Propel\Models\IngredientQuery;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
@@ -40,19 +42,31 @@ class ListIngredientCommand extends Command
         /** @var Ingredient[] $ingredients */
         $ingredients = IngredientQuery::create()->orderByName()
                                                 ->find();
-        $amountIngredients = count($ingredients);
 
-        if ($amountIngredients == 0) $_output->writeln("\nThere are no ingredients yet\n");
+        if (count($ingredients) == 0) $_output->writeln("\nThere are no ingredients yet\n");
         else
         {
             $_output->writeln("\nThe available ingredients are:\n");
 
-            for ($i = 0; $i < $amountIngredients; $i++)
+            $table = new Table($_output);
+            $table->setHeaders(array("Id", "Ingredient name"));
+
+            $isFirstRow = true;
+
+            foreach ($ingredients as $ingredient)
             {
-                $_output->writeln(" " . ($i + 1) . ". " . $ingredients[$i]->getName());
+                $row = array(
+                    $ingredient->getId(),
+                    $ingredient->getName()
+                );
+
+                if ($isFirstRow) $isFirstRow = false;
+                else $table->addRow(new TableSeparator());
+
+                $table->addRow($row);
             }
 
-            $_output->writeln("");
+            $table->render();
         }
     }
 }

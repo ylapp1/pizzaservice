@@ -39,7 +39,7 @@ trait PizzaListConverter
                 "orderCode" => $pizza->getOrderCode(),
                 "name" => $pizza->getName(),
                 "price" => $pizza->getPrice(),
-                "pizzaIngredients" => $ingredientListConverter->pizzaIngredientsToString($pizza->getPizzaIngredients()),
+                "pizzaIngredients" => $ingredientListConverter->pizzaIngredientsToString($pizza->getPizzaIngredients(), "\n"),
                 "amount" => $amount,
                 "id" => $pizza->getId()
             );

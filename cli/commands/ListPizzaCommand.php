@@ -2,7 +2,7 @@
 /**
  * @file
  * @version 0.1
- * @copyright 2017 CN-Consult GmbH
+ * @copyright 2017-2018 CN-Consult GmbH
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
@@ -12,6 +12,7 @@ use PizzaService\Lib\IngredientListConverter;
 use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\PizzaQuery;
 use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
@@ -54,14 +55,19 @@ class ListPizzaCommand extends Command
             $table = new Table($_output);
             $table->setHeaders(array("Order Code", "Pizza Name", "Price", "Ingredients"));
 
+            $isFirstRow = true;
+
             foreach ($pizzas as $pizza)
             {
                 $row = array(
                     $pizza->getOrderCode(),
                     $pizza->getName(),
                     number_format($pizza->getPrice(), 2) . " €",
-                    $ingredientListConverter->pizzaIngredientsToString($pizza->getPizzaIngredients())
+                    $ingredientListConverter->pizzaIngredientsToString($pizza->getPizzaIngredients(), "\n")
                 );
+
+                if ($isFirstRow) $isFirstRow = false;
+                else $table->addRow(new TableSeparator());
 
                 $table->addRow($row);
             }

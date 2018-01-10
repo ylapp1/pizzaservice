@@ -2,7 +2,7 @@
 /**
  * @file
  * @version 0.1
- * @copyright 2017 CN-Consult GmbH
+ * @copyright 2017-2018 CN-Consult GmbH
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
@@ -58,10 +58,13 @@ class ListOrderCommand extends Command
         if (count($orders) == 0) $_output->writeln("\nThere are no orders\n");
         else
         {
+            $_output->writeln("\nThe current orders are:\n");
+
             $table = new Table($_output);
             $table->setHeaders(array("Order ID", "Customer Id", "Created at", "Completed at", "Pizzas", "Total"));
 
-            $counter = 1;
+            $isFirstRow = true;
+
             foreach ($orders as $order)
             {
                 $pizzaListString = "";
@@ -89,14 +92,12 @@ class ListOrderCommand extends Command
                     number_format($totalPrice, 2) . " €"
                 );
 
+                // Insert the table separator
+                if ($isFirstRow) $isFirstRow = false;
+                else $table->addRow(new TableSeparator());
+
                 // Insert the row into the table
                 $table->addRow($row);
-
-                if ($counter != count($orders))
-                {
-                    $table->addRow(new TableSeparator());
-                    $counter ++;
-                }
             }
 
             $table->render();

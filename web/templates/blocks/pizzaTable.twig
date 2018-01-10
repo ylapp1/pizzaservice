@@ -1,7 +1,7 @@
 {#
  # @file
  # @version 0.1
- # @copyright 2017 CN-Consult GmbH
+ # @copyright 2017-2018 CN-Consult GmbH
  # @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  #}
 <table class="table table-hover pizza-table">
@@ -24,7 +24,7 @@
                 <td>{{ pizza.orderCode }}</td>
                 <td>{{ pizza.name }}</td>
                 <td>{{ pizza.price|number_format(2, ".", "") }} €</td>
-                <td>{{ pizza.pizzaIngredients }}</td>
+                <td>{{ pizza.pizzaIngredients|nl2br }}</td>
                 <td>
                     <form class="form-inline pizza-action">
                         <input type="number"
