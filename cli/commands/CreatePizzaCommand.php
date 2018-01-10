@@ -148,6 +148,9 @@ class CreatePizzaCommand extends Command
             return false;
         }
 
+        // Removes any duplicated ingredients in the list of selected ingredients
+        $selectedIngredients = array_unique($selectedIngredients);
+
         foreach ($selectedIngredients as $selectedIngredient)
         {
             $ingredient = IngredientQuery::create()->findOneByName($selectedIngredient);
