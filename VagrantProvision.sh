@@ -95,3 +95,6 @@ sed -i "/<Directory \/var\/www\/>/,/AllowOverride/s/AllowOverride None/AllowOver
 
 # Restart apache
 service apache2 restart
+
+# Fixes the bug that backspace prints a character in a CMD vagrant ssh session
+echo "stty sane" >> /home/ubuntu/.bashrc
