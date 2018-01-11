@@ -93,6 +93,16 @@ a2enmod rewrite
 #
 sed -i "/<Directory \/var\/www\/>/,/AllowOverride/s/AllowOverride None/AllowOverride All/" /etc/apache2/apache2.conf
 
+
+# Fixing the timezone
+
+# Change the system timezone (fixes time for web interface)
+timedatectl set-timezone Europe/Berlin
+
+# Change the php timezone (fixes time for cli commands)
+sed -i "/;date.timezone =/c date.timezone = \"Europe/Berlin\"" /etc/php/7.0/cli/php.ini
+
+
 # Restart apache
 service apache2 restart
 
