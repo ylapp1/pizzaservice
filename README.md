@@ -29,14 +29,14 @@ php pizzatool.php command [options] [arguments]
 
 ##### Options
 
-| command           | description                            |
-| ----------------- | -------------------------------------- |
-| complete:order    | Completes an uncompleted order.        |
-| create:ingredient | Adds a new ingredient to the database. |
-| create:pizza      | Adds a new pizza to the database.      |
-| list:ingredient   | Shows a list of all ingredients.       |
-| list:order        | Shows a list of all orders.            |
-| list:pizza        | Shows a list of all pizzas.            |
+| command           | arguments | description                             | options             |
+| ----------------- | --------- | --------------------------------------- | ------------------- |
+| complete:order    |  order id | Completes an uncompleted order.         |          -          |
+| create:ingredient |     -     | Adds a new ingredient to the database.  |          -          |
+| create:pizza      |     -     | Adds a new pizza to the database.       |          -          |
+| list:ingredient   |     -     | Shows a list of all ingredients.        |          -          |
+| list:order        |     -     | Shows a list of all uncompleted orders. | --include-completed |
+| list:pizza        |     -     | Shows a list of all pizzas.             |          -          |
 
 
 ### Web Interface
