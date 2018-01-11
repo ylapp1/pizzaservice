@@ -2,7 +2,7 @@
 /**
  * @file
  * @version 0.1
- * @copyright 2017 CN-Consult GmbH
+ * @copyright 2017-2018 CN-Consult GmbH
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
@@ -47,18 +47,18 @@ class CompleteOrderCommand extends Command
 
         if (! $order)
         {
-            $_output->writeln("Error: No order with that order-id exists!");
+            $_output->writeln("\nError: No order with that order-id exists!\n");
             return;
         }
 
         if ($order->getCompletedAt() !== null)
         {
-            $_output->writeln("Error: This order has already been completed!");
+            $_output->writeln("\nError: This order has already been completed!\n");
             return;
         }
 
         $order->setCompletedAt(time())
               ->save();
-        $_output->writeln("Order successfully completed!");
+        $_output->writeln("\nOrder successfully completed!\n");
     }
 }
