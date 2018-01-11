@@ -136,9 +136,9 @@ class PizzaOrderHandler
      */
     private function validatePizzaAmountChange(int $_pizzaId, int $_amount)
     {
-        if ($this->getAmountOrderPizzas($_pizzaId) + $_amount > 50)
+        if ($this->getAmountOrderPizzas($_pizzaId) + $_amount > 50 || $_amount < 1)
         {
-            return "Es dürfen nicht mehr als 50 Stück je Pizza in der Bestellung vorhanden sein.";
+            return "Die Anzahl je Pizza muss zwischen 1 und 50 liegen.";
         }
         elseif ($this->getTotalAmountOrderPizzas() + $_amount > 100)
         {
