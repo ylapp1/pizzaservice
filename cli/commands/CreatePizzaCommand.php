@@ -45,6 +45,17 @@ class CreatePizzaCommand extends Command
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
+        $ingredientNames = (array)IngredientQuery::create()->select(array("name"))
+                                                           ->orderByName()
+                                                           ->find();
+
+        if (! $ingredientNames)
+        {
+            $_output->writeln("\nError: No ingredients found. Create some ingredients before creating a pizza!\n");
+            return;
+        }
+
+
         $_output->writeln("\nCreate a new Pizza:\n");
 
         $pizzaName = $this->promptPizzaProperty($_input, $_output, "Name", "name", "String", true);
@@ -61,10 +72,6 @@ class CreatePizzaCommand extends Command
               ->setPrice($pizzaPrice)
               ->setOrderCode($pizzaOrderCode);
 
-
-        $ingredientNames = (array)IngredientQuery::create()->select(array("name"))
-                                                           ->orderByName()
-                                                           ->find();
 
         $pizza = $this->promptIngredients($_input, $_output, $pizza, $ingredientNames);
         if (! $pizza) return;
