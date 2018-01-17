@@ -8,6 +8,9 @@
 
 namespace PizzaService\Lib\Web\PizzaOrderSession;
 
+use PizzaService\Propel\Models\Pizza;
+use PizzaService\Propel\Models\PizzaIngredient;
+
 /**
  * Handles reading from and writing to the pizza order session field.
  *
@@ -22,16 +25,23 @@ class PizzaOrderSessionHandler
      *
      * @var String $sessionIndex
      */
-    private $sessionIndex = "orderPizzas";
+    private $pizzaOrderSessionIndex = "orderPizzas";
+
+    /**
+     * The index of the random generated pizza in the $_SESSION variable
+     *
+     * @var String $randomPizzaSessionIndex
+     */
+    private $randomPizzaSessionIndex = "randomPizza";
 
 
     /**
      * Starts a session and initializes the order array if no session is running.
      */
-    public function startSession ()
+    public function startSession()
     {
         if (session_id() == "") session_start();
-        if (! $_SESSION[$this->sessionIndex]) $_SESSION[$this->sessionIndex] = array();
+        if (! $_SESSION[$this->pizzaOrderSessionIndex]) $_SESSION[$this->pizzaOrderSessionIndex] = array();
     }
 
     /**
@@ -42,7 +52,7 @@ class PizzaOrderSessionHandler
     public function getPizzaOrder(): array
     {
         $this->startSession();
-        return $_SESSION[$this->sessionIndex];
+        return $_SESSION[$this->pizzaOrderSessionIndex];
     }
 
     /**
@@ -53,7 +63,7 @@ class PizzaOrderSessionHandler
     public function setPizzaOrder(array $_pizzaOrder)
     {
         $this->startSession();
-        $_SESSION[$this->sessionIndex] = $_pizzaOrder;
+        $_SESSION[$this->pizzaOrderSessionIndex] = $_pizzaOrder;
     }
 
     /**
@@ -85,5 +95,54 @@ class PizzaOrderSessionHandler
         else $pizzaOrder[$_pizzaId] = $_amount;
 
         $this->setPizzaOrder($pizzaOrder);
+    }
+
+    /**
+     * Saves the current random pizza in the session variable.
+     *
+     * @param Pizza $_pizza The random pizza
+     *
+     * @throws \PropelException
+     */
+    public function setRandomPizza(Pizza $_pizza)
+    {
+        $this->startSession();
+
+        $pizzaIngredients = array();
+        foreach ($_pizza->getPizzaIngredients() as $pizzaIngredient)
+        {
+            $pizzaIngredients[] = $pizzaIngredient->toJSON(true);
+        }
+
+        $_SESSION[$this->randomPizzaSessionIndex] = array(
+            "Pizza" => $_pizza->toJSON(true),
+            "PizzaIngredients" => $pizzaIngredients
+        );
+    }
+
+    /**
+     * Returns the current saved random pizza from the session variable.
+     *
+     * @return Pizza[] The random pizza as sole entry of an array or an empty array
+     */
+    public function getRandomPizza():array
+    {
+        $this->startSession();
+
+        if ($_SESSION[$this->randomPizzaSessionIndex])
+        {
+            $pizza = new Pizza();
+            $pizza->fromJSON($_SESSION[$this->randomPizzaSessionIndex]["Pizza"]);
+
+            foreach ($_SESSION[$this->randomPizzaSessionIndex]["PizzaIngredients"] as $pizzaIngredientJSON)
+            {
+                $pizzaIngredient = new PizzaIngredient();
+                $pizzaIngredient->fromJSON($pizzaIngredientJSON);
+                $pizza->addPizzaIngredient($pizzaIngredient);
+            }
+
+            return array($pizza);
+        }
+        else return array();
     }
 }
