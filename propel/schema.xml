@@ -38,7 +38,7 @@
     <table name="pizzas" phpName="Pizza">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="name" type="varchar" size="255" required="true"/>
-        <column name="order_code" type="smallint" required="true"/>
+        <column name="order_code" type="varchar" size="20" required="true"/>
         <column name="price" type="float" required="true"/>
     </table>
 
