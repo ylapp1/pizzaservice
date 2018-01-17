@@ -42,6 +42,10 @@
                         <a href="web/index.php">Pizzakarte</a>
                     </li>
 
+                    <li {%  if pizzaGeneratorActive is defined %}class="active"{% endif %}>
+                        <a href="web/pizza-generator">Pizza Generator</a>
+                    </li>
+
                     <li {% if pizzaOrderActive is defined %}class="active"{% endif %}>
                         <a href="web/order">
                             Bestellung

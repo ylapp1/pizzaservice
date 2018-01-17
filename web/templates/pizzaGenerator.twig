@@ -1,0 +1,63 @@
+{#
+# @file
+# @version 0.1
+# @copyright 2018 CN-Consult GmbH
+# @author Yannick Lapp <yannick.lapp@cn-consult.eu>
+#}
+{% extends "base.twig" %}
+
+{# Head #}
+{% block pageTitle %}Pizza Generator{% endblock %}
+{% block pageJavaScript %}pizzaGenerator.js{% endblock %}
+{% block basePath %}../../{% endblock %}
+
+{# Navigation bar#}
+{% set pizzaGeneratorActive = true %}
+
+{# Main content #}
+{% block content %}
+
+    {% if ingredients|length == 0 %}
+        <p class="alert alert-info">
+            Es sind noch keine Zutaten vorhanden. Pizzen können erst dann generiert werden wenn mindestens eine Zutat (außer Teig) erstellt wurde.
+        </p>
+
+    {% else %}
+
+        <p>Wählen Sie die Zutaten, die auf der Pizza sein dürfen:</p>
+
+        <table class="table table-hover">
+
+            <tbody>
+
+                {% for ingredient in ingredients %}
+                    <tr>
+                        <td>{{ ingredient.ingredientName }}</td>
+                        <td>
+                            <input type="checkbox"
+                                   data-id="{{ ingredient.ingredient.id }}">
+                        </td>
+                    </tr>
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <button class="btn btn-primary generate-pizza-button">Neue Pizza generieren</button>
+
+        {# Table of pizzas in the order list #}
+        {% embed "blocks/pizzaTable.twig" %}
+
+            {% block actionButtonColumnTitle %}Bestellung{% endblock %}
+            {% block actionButton %}
+                <button type="button" class="btn btn-primary" data-pizza-id="{{ pizza.id }}">Bestellen</button>
+            {% endblock %}
+            {% block pizzaAmount %}{{ pizzaAmount|default(0) }}{% endblock %}
+            {% block pizzaListEmpty %}Noch keine Pizza generiert{% endblock %}
+
+        {% endembed %}
+
+    {% endif %}
+
+{% endblock %}

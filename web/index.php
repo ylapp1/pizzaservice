@@ -13,6 +13,7 @@ $loader->addPsr4("PizzaService\\", __DIR__ . "/..");
 Propel::init(__DIR__ . "/../propel/conf/pizza_service-conf.php");
 
 use Silex\Application;
+use PizzaService\Lib\Web\App\Controller\PizzaGeneratorController;
 use PizzaService\Lib\Web\App\Controller\PizzaMenuCardController;
 use PizzaService\Lib\Web\App\Controller\PizzaOrderController;
 use PizzaService\Lib\Web\App\Controller\PizzaOrderProcessController;
@@ -22,6 +23,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), array(
     "twig.path" => __DIR__ . "/templates",
 ));
 
+$pizzaGeneratorController = new PizzaGeneratorController($app["twig"]);
 $pizzaMenuCardController = new PizzaMenuCardController($app["twig"]);
 $pizzaOrderController = new PizzaorderController($app["twig"]);
 $pizzaOrderProcessController = new PizzaOrderProcessController();
@@ -49,7 +51,20 @@ $pizzaOrder->get("/process/", function() use($pizzaOrderProcessController){
     return $pizzaOrderProcessController->addOrder();
 });
 
+// Pizza generator page
+$pizzaGenerator = $app["controllers_factory"];
+$pizzaGenerator->get("/", function() use($pizzaGeneratorController) {
+    return $pizzaGeneratorController->showPizzaGenerator();
+});
+$pizzaGenerator->get("/generate-pizza/", function() use($pizzaGeneratorController) {
+    return $pizzaGeneratorController->generatePizza();
+});
+$pizzaGenerator->get("/save-generated-pizza/", function() use($pizzaGeneratorController) {
+    return $pizzaGeneratorController->saveGeneratedPizza();
+});
+
 $app->mount("/", $pizzaMenuCard);
 $app->mount("/order/", $pizzaOrder);
+$app->mount("/pizza-generator/", $pizzaGenerator);
 
 $app->run();

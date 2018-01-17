@@ -36,3 +36,8 @@ div#message {
 .address-input-field div.row {
     margin: 0 0 10px;
 }
+
+/* /web/pizza-generator/ */
+.generate-pizza-button {
+    margin: 0 0 20px;
+}
