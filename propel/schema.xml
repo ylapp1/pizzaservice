@@ -19,7 +19,6 @@
 
     <table name="ingredients" phpName="Ingredient">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
-        <column name="name" type="varchar" size="255" required="true"/>
     </table>
 
     <table name="orders" phpName="Order">
@@ -70,6 +69,29 @@
         </foreign-key>
         <foreign-key foreignTable="ingredients" phpName="Ingredient" refPhpName="PizzaIngredient" onDelete="RESTRICT">
             <reference local="ingredient_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+
+    <!-- Tables for translation of ingredient names -->
+    <!-- Schema idea from https://www.apphp.com/tutorials/index.php?page=multilanguage-database-design-in-mysql -->
+    <table name="languages" phpName="Language">
+        <column name="code" type="varchar" size="5" required="true" primaryKey = "true" />
+        <column name="name" type="varchar" size="100" required="true" />
+    </table>
+
+    <table name="ingredients_translation" phpName="IngredientTranslation" isCrossRef="true">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="ingredient_id" type="integer" required="true" />
+        <column name="language_code" type="varchar" size="5" required="true" />
+        <column name="ingredient_name" type="varchar" size="255" required="true" />
+
+        <foreign-key foreignTable="ingredients" phpName="Ingredient" refPhpName="IngredientTranslation">
+            <reference local="ingredient_id" foreign="id" />
+        </foreign-key>
+
+        <foreign-key foreignTable="languages" phpName="Language" refPhpName="IngredientTranslation">
+            <reference local="language_code" foreign="code" />
         </foreign-key>
     </table>
 

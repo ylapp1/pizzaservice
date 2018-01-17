@@ -9,7 +9,8 @@
 namespace PizzaService\Cli\Commands;
 
 use PizzaService\Propel\Models\Ingredient;
-use PizzaService\Propel\Models\IngredientQuery;
+use PizzaService\Propel\Models\IngredientTranslation;
+use PizzaService\Propel\Models\IngredientTranslationQuery;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -41,25 +42,55 @@ class CreateIngredientCommand extends Command
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
+        $ingredientTranslationDe = $this->promptIngredientName($_input, $_output, "de");
+        if (! $ingredientTranslationDe) return;
+
+        $ingredientTranslationIt = $this->promptIngredientName($_input, $_output, "it");
+        if (! $ingredientTranslationIt) return;
+
+        $ingredient = new Ingredient();
+        $ingredient->addIngredientTranslation($ingredientTranslationDe)
+                   ->addIngredientTranslation($ingredientTranslationIt)
+                   ->save();
+
+        $_output->writeln("Ingredient '" . $ingredientTranslationDe->getIngredientName(). "' was added to the database!");
+    }
+
+    /**
+     * Prompts for an ingredient name in a specific language and returns the user input if it was valid.
+     *
+     * @param InputInterface $_input The input interface
+     * @param OutputInterface $_output The output interface
+     * @param String $_languageCode The language code
+     *
+     * @return IngredientTranslation|bool The ingredient translation object or false
+     *
+     * @throws \Exception
+     */
+    private function promptIngredientName(InputInterface $_input, OutputInterface $_output, String $_languageCode)
+    {
         $helper = $this->getHelper("question");
-        $questionIngredientName = new Question("Name of the new ingredient: ");
+        $questionIngredientName = new Question("Name (" . $_languageCode . ") of the new ingredient: ");
 
         $ingredientName = (String)$helper->ask($_input, $_output, $questionIngredientName);
 
         if (! $ingredientName) $_output->writeln("Error: No ingredient name entered!");
         else
         {
-            $ingredient = IngredientQuery::create()->findOneByName($ingredientName);
+            $ingredientTranslation = IngredientTranslationQuery::create()->filterByLanguageCode($_languageCode)
+                                                                         ->findOneByIngredientName($ingredientName);
 
-            if ($ingredient) $_output->writeln("Error: An ingredient with that name already exists!");
+            if ($ingredientTranslation) $_output->writeln("Error: An ingredient with that name already exists!");
             else
             {
-                $ingredient = new Ingredient();
-                $ingredient->setName($ingredientName)
-                           ->save();
+                $ingredientTranslation = new IngredientTranslation();
+                $ingredientTranslation->setLanguageCode($_languageCode)
+                                      ->setIngredientName($ingredientName);
 
-                $_output->writeln("Ingredient '" . $ingredientName . "' was added to the database!");
+                return $ingredientTranslation;
             }
         }
+
+        return false;
     }
 }

@@ -8,7 +8,7 @@
 
 namespace PizzaService\Cli\Commands;
 
-use PizzaService\Propel\Models\IngredientQuery;
+use PizzaService\Propel\Models\IngredientTranslationQuery;
 use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\PizzaIngredient;
 use PizzaService\Propel\Models\PizzaQuery;
@@ -45,9 +45,10 @@ class CreatePizzaCommand extends Command
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
-        $ingredientNames = (array)IngredientQuery::create()->select(array("name"))
-                                                           ->orderByName()
-                                                           ->find();
+        $ingredientNames = (array)IngredientTranslationQuery::create()->filterByLanguageCode("de")
+                                                                      ->orderByIngredientName()
+                                                                      ->select(array("ingredient_name"))
+                                                                      ->find();
 
         if (! $ingredientNames)
         {
@@ -160,7 +161,8 @@ class CreatePizzaCommand extends Command
 
         foreach ($selectedIngredients as $selectedIngredient)
         {
-            $ingredient = IngredientQuery::create()->findOneByName($selectedIngredient);
+            $ingredient = IngredientTranslationQuery::create()->findOneByIngredientName($selectedIngredient)
+                                                              ->getIngredient();
             $amountGrams = 0;
 
             while (! $amountGrams)
