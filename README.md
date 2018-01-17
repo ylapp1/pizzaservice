@@ -2,11 +2,11 @@
 
 ## Description
 
-Database management tool for orders of a pizza delivery service including a database schema for mysql.
+Database management tool for orders of a pizza delivery service using propel and mysql.
 
 Interfaces to manage the database are:
-* CLI: Input data into the database
-* Web: View the data that is stored in the database
+* CLI: Tool to create ingredients, pizzas and to complete orders
+* Web: A website on which customers can order pizzas
 
 
 ## Set up the development environment

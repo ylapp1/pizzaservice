@@ -62,8 +62,9 @@ class PizzaOrderHandler
     public function getPizzas()
     {
         $pizzaIds = $this->getPizzaIds();
-        $pizzas = PizzaQuery::create()->orderByOrderCode()
-                                      ->findById($pizzaIds);
+        $pizzas = PizzaQuery::create()->filterById($pizzaIds)
+                                      ->orderByOrderCode()
+                                      ->find();
 
         return $pizzas;
     }

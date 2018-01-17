@@ -8,6 +8,7 @@
 
 namespace PizzaService\Lib\Web\App\Controller;
 
+use Criteria;
 use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverter;
 use PizzaService\Lib\Web\PizzaOrderSession\PizzaOrderHandler;
 use PizzaService\Propel\Models\PizzaQuery;
@@ -58,7 +59,8 @@ class PizzaMenuCardController
      */
     public function showPizzaMenuCard(): String
     {
-        $pizzas = PizzaQuery::create()->orderByOrderCode()
+        $pizzas = PizzaQuery::create()->filterByOrderCode("G%", Criteria::NOT_LIKE)
+                                      ->orderByOrderCode()
                                       ->find();
 
         return $this->twig->render("pizzaMenuCard.twig",

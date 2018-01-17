@@ -147,7 +147,7 @@ class PizzaOrderProcessController
         {
             $pizzaOrder = new PizzaOrder();
             $pizzaOrder->setPizzaId($pizzaId)
-                ->setAmount($amount);
+                       ->setAmount($amount);
 
             $order->addPizzaOrder($pizzaOrder);
         }
