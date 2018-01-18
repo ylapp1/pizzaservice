@@ -40,7 +40,9 @@
 
         <div class="row">
 
-            <button type="submit" class="btn btn-primary col-md-2 col-md-offset-10">Bestellen</button>
+            <button type="submit"
+                    class="btn btn-primary col-md-2 col-md-offset-10"
+                    {% if pizzas|length == 0 %}disabled{% endif %}>Bestellen</button>
 
         </div>
 

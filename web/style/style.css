@@ -41,3 +41,29 @@ div#message {
 .generate-pizza-button {
     margin: 0 0 20px;
 }
+
+/** Ingredient table ***/
+.ingredient-table.table td {
+    padding: 0;
+    margin: 0;
+}
+.ingredient-table tr td:nth-child(2) {
+    border-right: 1px solid #ddd;;
+}
+
+/*** Ingredient table labels ***/
+.ingredient-table label {
+    display: block;
+    padding: 8px;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+.ingredient-table label:hover {
+    cursor: pointer;
+}
+
+/*** Ingredient table cells with checkboxes **/
+.ingredient-table tr td:nth-child(2n+0) {
+    text-align: center;
+}

@@ -26,18 +26,27 @@
 
         <p>Wählen Sie die Zutaten, die auf der Pizza sein dürfen:</p>
 
-        <table class="table table-hover">
+        <table class="table table-striped ingredient-table">
 
             <tbody>
 
-                {% for ingredient in ingredients %}
+                {% for row in ingredients|batch(2) %}
+
                     <tr>
-                        <td>{{ ingredient.ingredientName }}</td>
-                        <td>
-                            <input type="checkbox"
-                                   data-id="{{ ingredient.ingredient.id }}">
-                        </td>
+                        {% for ingredient in row %}
+                            <td>
+                                <label for="{{ ingredient.ingredient.id }}">{{ ingredient.ingredientName }}</label>
+                            </td>
+                            <td>
+                                <label for="{{ ingredient.ingredient.id }}" class="table-label">
+                                    <input type="checkbox"
+                                    data-id="{{ ingredient.ingredient.id }}"
+                                    id="{{ ingredient.ingredient.id }}">
+                                </label>
+                            </td>
+                        {% endfor %}
                     </tr>
+
                 {% endfor %}
 
             </tbody>

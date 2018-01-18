@@ -21,7 +21,9 @@
 
         {% if pizzas|length == 0 %}
 
-        <td colspan="5" class="alert alert-info text-center">{% block pizzaListEmpty %}{% endblock %}</td>
+            <tr>
+                <td colspan="5" class="alert alert-info text-center">{% block pizzaListEmpty %}{% endblock %}</td>
+            </tr>
 
         {% else %}
 
