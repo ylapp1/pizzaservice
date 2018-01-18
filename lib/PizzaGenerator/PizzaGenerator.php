@@ -47,12 +47,26 @@ class PizzaGenerator
      */
     public function generatePizza($_allowedIngredients): Pizza
     {
-        $pizza = new Pizza();
-        $this->addRandomIngredients($pizza, $_allowedIngredients);
+        // Generate pizza with unique ingredient combination (including amount of grams)
+        do
+        {
+            $pizza = new Pizza();
+            $this->addRandomIngredients($pizza, $_allowedIngredients);
 
+            $pizzaExists = PizzaQuery::create()->filterByPizzaIngredient($pizza->getPizzaIngredients())
+                                               ->findOne();
+        } while($pizzaExists);
+
+        // Generate unique pizza name
+        do
+        {
+            $pizzaName = $this->pizzaNameGenerator->generatePizzaName($pizza);
+            $pizzaExists = PizzaQuery::create()->findOneByName($pizzaName);
+        } while($pizzaExists);
+
+        $pizza->setName($pizzaName);
         $pizza->setOrderCode($this->getNewOrderCode());
         $pizza->setPrice($this->getRandomPrice());
-        $pizza->setName($this->pizzaNameGenerator->generatePizzaName($pizza));
 
         return $pizza;
     }
