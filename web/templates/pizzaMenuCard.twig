@@ -24,7 +24,6 @@
         {% block actionButton %}
             <button type="button" class="btn btn-primary" data-pizza-id="{{ pizza.id }}">Bestellen</button>
         {% endblock %}
-        {% block pizzaAmount %}{{ pizzaAmount|default(0) }}{% endblock %}
         {% block pizzaListEmpty %}Es gibt noch keine Pizzas{% endblock %}
 
     {% endembed %}
