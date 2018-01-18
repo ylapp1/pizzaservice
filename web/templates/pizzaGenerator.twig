@@ -46,16 +46,20 @@
 
         <button class="btn btn-primary generate-pizza-button">Neue Pizza generieren</button>
 
-        {# Table of pizzas in the order list #}
-        {% embed "blocks/pizzaTable.twig" %}
+        {% block pizzaData %}
 
-            {% block actionButtonColumnTitle %}Bestellung{% endblock %}
-            {% block actionButton %}
-                <button type="button" class="btn btn-primary" data-pizza-id="{{ pizza.id }}">Bestellen</button>
-            {% endblock %}
-            {% block pizzaListEmpty %}Noch keine Pizza generiert{% endblock %}
+            {# Table of pizzas in the order list #}
+            {% embed "blocks/pizzaTable.twig" %}
 
-        {% endembed %}
+                {% block actionButtonColumnTitle %}Bestellung{% endblock %}
+                {% block actionButton %}
+                    <button type="button" class="btn btn-primary" data-pizza-id="{{ pizza.id }}">Bestellen</button>
+                {% endblock %}
+                {% block pizzaListEmpty %}Noch keine Pizza generiert{% endblock %}
+
+            {% endembed %}
+
+        {% endblock %}
 
     {% endif %}
 

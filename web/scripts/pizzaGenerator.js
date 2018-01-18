@@ -5,11 +5,7 @@
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
-var pizzaTableCells;
-
 $(document).ready(function(){
-
-    pizzaTableCells = $(".pizza-table tbody td");
 
     $("button.generate-pizza-button").on("click", function(){
 
@@ -26,18 +22,16 @@ $(document).ready(function(){
             data: {
               ingredientIds: JSON.stringify(ingredientIds)
             },
-            success: function(_pizzaDataJson){
+            success: function(_pizzaTableHTML){
 
-                var pizza = $.parseJSON(_pizzaDataJson);
-
-                updatePizzaTable(pizza);
-                showSuccessMessage("Pizza \"" + pizza.Name + "\" wurde erfolgreich generiert");
+                $(".pizza-table").replaceWith(_pizzaTableHTML);
+                showSuccessMessage("Pizza wurde erfolgreich generiert");
             }
         });
 
     });
 
-    $("button:not(.generate-pizza-button)").on("click", function(){
+    $(document).on("click", "button:not(.generate-pizza-button)", function(){
 
         var generatedPizzaId = "false";
         var button = $(this);
@@ -73,30 +67,4 @@ function addGeneratedPizzaToOrder(_generatedPizzaId, _button)
 
         addPizzaToOrder(_generatedPizzaId, _button.parents().eq(2).find("td:nth-child(2)").text(), amount);
     }
-}
-
-/**
- * Updates the pizza table with the information about the new generated pizza.
- *
- * @param _pizza JSON The pizza data
- */
-function updatePizzaTable(_pizza)
-{
-    var price = parseFloat(_pizza.Price).toFixed(2);
-    var ingredientsString = "";
-    var isFirstEntry = true;
-
-    $.each(_pizza.PizzaIngredients, function(index, pizzaIngredient){
-
-        if (isFirstEntry) isFirstEntry = false;
-        else ingredientsString += ", ";
-
-        ingredientsString += pizzaIngredient.Name + " (" + pizzaIngredient.Grams + ")";
-    });
-
-    $(pizzaTableCells[0]).text(_pizza.OrderCode);
-    $(pizzaTableCells[1]).text(_pizza.Name);
-    $(pizzaTableCells[2]).text(price + " €");
-    $(pizzaTableCells[3]).text(ingredientsString);
-    $(pizzaTableCells[4]).find("button").data("pizza-id", _pizza.Id);
 }

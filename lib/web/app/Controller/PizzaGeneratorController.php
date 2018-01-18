@@ -17,7 +17,6 @@ use PizzaService\Propel\Models\IngredientQuery;
 use PizzaService\Propel\Models\IngredientTranslationQuery;
 use PizzaService\Propel\Models\PizzaQuery;
 
-
 /**
  * Controller for the pizza generator page.
  */
@@ -91,9 +90,13 @@ class PizzaGeneratorController
     /**
      * Generates a random pizza and stores it in the $_SESSION variable.
      *
-     * @return String The random pizza data as a JSON object
+     * @return String The random pizza data table HTML
      *
      * @throws \PropelException
+     * @throws \Throwable
+     * @throws \Twig_Error_Loader
+     * @throws \Twig_Error_Runtime
+     * @throws \Twig_Error_Syntax
      */
     public function generatePizza(): String
     {
@@ -103,23 +106,13 @@ class PizzaGeneratorController
         $pizza = $this->pizzaGenerator->generatePizza($ingredients);
         $this->pizzaOrderSessionHandler->setRandomPizza($pizza);
 
-        $pizzaData = $pizza->toArray();
+        // Return only the rendered pizza table from the pizzaGenerator page template
+        $templateData = array(
+            "pizzas" => $this->getTemplateArray(array($pizza)),
+        );
+        $template = $this->twig->load("pizzaGenerator.twig");
 
-        $pizzaData["PizzaIngredients"] = array();
-
-        foreach ($pizza->getPizzaIngredients() as $pizzaIngredient)
-        {
-            $ingredientName = IngredientTranslationQuery::create()->filterByIngredient($pizzaIngredient->getIngredient())
-                                                                  ->findOneByLanguageCode("de")
-                                                                  ->getIngredientName();
-
-            $pizzaData["PizzaIngredients"][] = array(
-                "Name" => $ingredientName,
-                "Grams" => $pizzaIngredient->getGrams()
-            );
-        }
-
-        return json_encode($pizzaData);
+        return $template->renderBlock("pizzaData", $templateData);
     }
 
     /**
