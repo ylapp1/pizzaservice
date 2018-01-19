@@ -57,7 +57,7 @@ class ListIngredientCommand extends Command
             foreach ($ingredients as $ingredient)
             {
                 $row = array(
-                    $ingredient->getId(),
+                    $ingredient->getIngredientId(),
                     $ingredient->getIngredientName()
                 );
 

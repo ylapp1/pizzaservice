@@ -145,9 +145,9 @@ class PizzaNameGenerator
             {
                 $ingredient = $pizzaIngredient->getIngredient();
                 $ingredientName = IngredientTranslationQuery::create()->filterByIngredient($ingredient)
-                    ->filterByLanguageCode("it")
-                    ->findOne()
-                    ->getIngredientName();
+                                                                      ->filterByLanguageCode("it")
+                                                                      ->findOne()
+                                                                      ->getIngredientName();
 
                 break;
             }

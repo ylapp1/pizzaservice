@@ -131,6 +131,9 @@ class PizzaGenerator
 
         $remainingWeight = $this->addRandomIngredient($_pizza, $ingredientDough, 100, $remainingWeight);
 
+        $_allowedIngredients = (array)$_allowedIngredients;
+        shuffle($_allowedIngredients);
+
         foreach ($_allowedIngredients as $ingredient)
         {
             $ingredientName = IngredientTranslationQuery::create()->filterByLanguageCode("it")
