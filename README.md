@@ -36,7 +36,7 @@ php pizzatool.php command [options] [arguments]
 | create:pizza      |     -     | Adds a new pizza to the database.       |          -          |
 | list:ingredient   |     -     | Shows a list of all ingredients.        |          -          |
 | list:order        |     -     | Shows a list of all uncompleted orders. | --include-completed |
-| list:pizza        |     -     | Shows a list of all pizzas.             |          -          |
+| list:pizza        |     -     | Shows a list of all pizzas.             | --include-generated |
 
 
 ### Web Interface
