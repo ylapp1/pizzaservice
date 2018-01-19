@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="pizza_service" defaultIdMethod="native" namespace="PizzaService\Propel\Models">
+
+    <!-- Pizza Data -->
+    <table name="ingredients" phpName="Ingredient">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+    </table>
+
+    <table name="ingredients_translation" phpName="IngredientTranslation" isCrossRef="true">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="ingredient_id" type="integer" required="true"/>
+        <column name="language_code" type="varchar" size="5" required="true"/>
+        <column name="ingredient_name" type="varchar" size="255" required="true"/>
+
+        <foreign-key foreignTable="ingredients" phpName="Ingredient" refPhpName="IngredientTranslation">
+            <reference local="ingredient_id" foreign="id"/>
+        </foreign-key>
+
+        <foreign-key foreignTable="languages" phpName="Language" refPhpName="IngredientTranslation">
+            <reference local="language_code" foreign="code"/>
+        </foreign-key>
+
+        <!-- Every ingredient name may only appear once per language -->
+        <unique>
+            <unique-column name="language_code"/>
+            <unique-column name="ingredient_name"/>
+        </unique>
+
+        <!-- Every ingredient may have only one translation per language -->
+        <unique>
+            <unique-column name="ingredient_id"/>
+            <unique-column name="language_code"/>
+        </unique>
+    </table>
+
+    <table name="pizzas" phpName="Pizza">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="255" required="true"/>
+        <column name="order_code" type="varchar" size="20" required="true"/>
+        <column name="price" type="float" required="true"/>
+
+        <unique>
+            <unique-column name="name"/>
+        </unique>
+        <unique>
+            <unique-column name="order_code"/>
+        </unique>
+    </table>
+
+    <table name="pizza_ingredients" phpName="PizzaIngredient" isCrossRef="true">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="pizza_id" type="integer" required="true"/>
+        <column name="ingredient_id" type="integer" required="true"/>
+        <column name="grams" type="float" required="true"/>
+
+        <foreign-key foreignTable="pizzas" phpName="Pizza" refPhpName="PizzaIngredient" onDelete="CASCADE">
+            <reference local="pizza_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="ingredients" phpName="Ingredient" refPhpName="PizzaIngredient" onDelete="RESTRICT">
+            <reference local="ingredient_id" foreign="id"/>
+        </foreign-key>
+
+        <!-- Every pizza may contain each ingredient at most one time -->
+        <unique>
+            <unique-column name="pizza_id"/>
+            <unique-column name="ingredient_id"/>
+        </unique>
+    </table>
+
+</database>
