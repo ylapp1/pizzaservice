@@ -9,6 +9,7 @@
 namespace PizzaService\Lib\Web\App\Controller\Traits;
 
 use PizzaService\Lib\IngredientListConverter;
+use PizzaService\Propel\Models\PizzaIngredientQuery;
 
 /**
  * Converts a Propel Collection of Pizza Objects to an array that can be used to fill the twig templates.
@@ -35,11 +36,26 @@ trait PizzaListConverter
             $amount = 0;
             if ($_amounts) $amount = $_amounts[$pizza->getId()];
 
+            $pizzaIngredientIds = array();
+            foreach ($pizza->getIngredients() as $pizzaIngredient)
+            {
+                $pizzaIngredientIds[] = $pizzaIngredient->getId();
+            }
+
+            $pizzaIngredients = PizzaIngredientQuery::create()->filterById($pizzaIngredientIds)
+                                                              ->useIngredientQuery()
+                                                                  ->useIngredientTranslationQuery()
+                                                                      ->filterByLanguageCode("de")
+                                                                      ->orderByIngredientName()
+                                                                  ->endUse()
+                                                              ->endUse()
+                                                              ->find();
+
             $outputPizza = array(
                 "orderCode" => $pizza->getOrderCode(),
                 "name" => $pizza->getName(),
                 "price" => $pizza->getPrice(),
-                "pizzaIngredients" => $ingredientListConverter->pizzaIngredientsToString($pizza->getPizzaIngredients(), "\n"),
+                "pizzaIngredients" => $ingredientListConverter->pizzaIngredientsToString($pizzaIngredients, "\n"),
                 "amount" => $amount,
                 "id" => $pizza->getId()
             );
