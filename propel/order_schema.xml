@@ -15,16 +15,16 @@
 
     </table>
 
-    <table name="order_pizzas" phpName="PizzaOrder" isCrossRef="true">
+    <table name="order_pizzas" phpName="OrderPizza" isCrossRef="true">
         <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
         <column name="pizza_id" type="integer" required="true"/>
         <column name="order_id" type="integer" required="true"/>
         <column name="amount" type="smallint" required="true"/>
 
-        <foreign-key foreignTable="orders" phpName="Order" refPhpName="PizzaOrder" onDelete="CASCADE">
+        <foreign-key foreignTable="orders" phpName="Order" refPhpName="OrderPizza" onDelete="CASCADE">
             <reference local="order_id" foreign="id"/>
         </foreign-key>
-        <foreign-key foreignTable="pizzas" phpName="Pizza" refPhpName="PizzaOrder" onDelete="RESTRICT">
+        <foreign-key foreignTable="pizzas" phpName="Pizza" refPhpName="OrderPizza" onDelete="RESTRICT">
             <reference local="pizza_id" foreign="id"/>
         </foreign-key>
     </table>

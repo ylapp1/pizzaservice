@@ -72,14 +72,14 @@ class ListOrderCommand extends Command
 
                 // Generate the pizza list string
                 $isFirstEntry = true;
-                foreach ($order->getPizzaOrders() as $pizzaOrder)
+                foreach ($order->getOrderPizzas() as $orderPizza)
                 {
                     if ($isFirstEntry) $isFirstEntry = false;
                     else $pizzaListString .= "\n";
 
-                    $pizzaListString .= $pizzaOrder->getAmount() . "x " . $pizzaOrder->getPizza()->getName();
+                    $pizzaListString .= $orderPizza->getAmount() . "x " . $orderPizza->getPizza()->getName();
 
-                    $totalPrice += $pizzaOrder->getPizza()->getPrice() * $pizzaOrder->getAmount();
+                    $totalPrice += $orderPizza->getPizza()->getPrice() * $orderPizza->getAmount();
                 }
 
                 // Initialize the row data

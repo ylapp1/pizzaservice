@@ -28,7 +28,7 @@ use PizzaService\Propel\Models\HouseNumberQuery;
 use PizzaService\Propel\Models\LastName;
 use PizzaService\Propel\Models\LastNameQuery;
 use PizzaService\Propel\Models\Order;
-use PizzaService\Propel\Models\PizzaOrder;
+use PizzaService\Propel\Models\OrderPizza;
 use PizzaService\Propel\Models\PizzaQuery;
 use PizzaService\Propel\Models\Street;
 use PizzaService\Propel\Models\StreetName;
@@ -359,11 +359,11 @@ class PizzaOrderProcessController
         // Add pizzas to the order
         foreach ($this->pizzaOrderHandler->getOrder() as $pizzaId => $amount)
         {
-            $pizzaOrder = new PizzaOrder();
-            $pizzaOrder->setPizzaId($pizzaId)
+            $orderPizza = new OrderPizza();
+            $orderPizza->setPizzaId($pizzaId)
                        ->setAmount($amount);
 
-            $order->addPizzaOrder($pizzaOrder);
+            $order->addOrderPizza($orderPizza);
         }
 
         return $order;
