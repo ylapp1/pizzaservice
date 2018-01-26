@@ -15,8 +15,6 @@ use PizzaService\Propel\Models\PizzaQuery;
 
 /**
  * Stores the order pizzas and saves/loads them from the $_SESSION variable.
- *
- * Remember to call toSession() after changing the order.
  */
 class PizzaOrder
 {
@@ -47,93 +45,15 @@ class PizzaOrder
     }
 
 
-    /**
-     * Adds an order pizza to the order.
-     *
-     * @param OrderPizza $_orderPizza The order pizza
-     *
-     * @return String Error message or empty string
-     *
-     * @throws \PropelException
-     */
-    public function addOrderPizza(OrderPizza $_orderPizza)
-    {
-        $orderCode = $_orderPizza->getPizza()->getOrderCode();
-
-        if (substr($orderCode, 0, 1) != "G")
-        { // If pizza is not a generated one
-
-            $pizzaId = $_orderPizza->getPizza()->getId();
-            if (! $pizzaId) return "Ungültige Pizza Id";
-
-            $pizza = PizzaQuery::create()->findOneById($pizzaId);
-            if (! $pizza) return "Ungültige Pizza Id";
-        }
-
-
-        if ($this->orderPizzas[$orderCode])
-        { // If pizza with that order code is already in order
-
-            $this->changeAmountOrderPizzas($_orderPizza);
-
-        }
-        else $this->addNewOrderPizza($_orderPizza);
-    }
+    // Write and read orderPizzas from session
 
     /**
-     * @param OrderPizza $_orderPizza
-     *
-     * @throws \PropelException
+     * Starts a session and initializes the order array if no session is running.
      */
-    public function addNewOrderPizza(OrderPizza $_orderPizza)
+    private function startSession()
     {
-        $orderCode = $_orderPizza->getPizza()->getOrderCode();
-        $this->orderPizzas[$orderCode] = $_orderPizza;
-    }
-
-    /**
-     * @param OrderPizza $_orderPizza
-     * @throws \PropelException
-     */
-    public function changeAmountOrderPizzas(OrderPizza $_orderPizza)
-    {
-        $orderCode = $_orderPizza->getPizza()->getOrderCode();
-        $orderPizza = $this->orderPizzas[$orderCode];
-
-        $newAmount = $orderPizza->getAmount() + $_orderPizza->getAmount();
-        $orderPizza->setAmount($newAmount);
-    }
-
-    /**
-     * Validates a pizza amount change.
-     *
-     * @param int $_pizzaId The pizza id
-     * @param int $_amount The amount that is added to the current amount
-     *
-     * @return String|bool Error message or false
-     */
-    private function validatePizzaAmountChange(int $_pizzaId, int $_amount)
-    {
-        if ($this->getAmountOrderPizzas($_pizzaId) + $_amount > 50 || $this->getAmountOrderPizzas($_pizzaId) + $_amount < 1)
-        {
-            return "Die Anzahl je Pizza muss zwischen 1 und 50 liegen.";
-        }
-        elseif ($this->getTotalAmountOrderPizzas() + $_amount > 100)
-        {
-            return "Es dürfen nicht mehr als 100 Pizzen auf einmal bestellt werden.";
-        }
-        else return false;
-    }
-
-
-    /**
-     * Removes a order pizza from the order.
-     *
-     * @param String $_orderCode The order code of the pizza
-     */
-    public function removeOrderPizza(String $_orderCode)
-    {
-        unset($this->orderPizzas[$_orderCode]);
+        if (session_id() == "") session_start();
+        if (! $_SESSION[$this->pizzaOrderSessionIndex]) $_SESSION[$this->pizzaOrderSessionIndex] = array();
     }
 
     /**
@@ -173,7 +93,7 @@ class PizzaOrder
 
         $this->orderPizzas = array();
 
-        foreach ($_SESSION[$this->pizzaOrderSessionIndex] as $pizzaId => $pizzaOrderData)
+        foreach ($_SESSION[$this->pizzaOrderSessionIndex] as $pizzaOrderCode => $pizzaOrderData)
         {
             $orderPizza = new OrderPizza();
 
@@ -185,12 +105,12 @@ class PizzaOrder
             }
             else
             {
-                $pizza = PizzaQuery::create()->findOneById($pizzaId);
+                $pizza = PizzaQuery::create()->findOneByOrderCode($pizzaOrderCode);
                 $orderPizza->setPizza($pizza)
                            ->setAmount($pizzaOrderData);
             }
 
-            $this->orderPizzas[] = $orderPizza;
+            $this->orderPizzas[$pizzaOrderCode] = $orderPizza;
         }
     }
 
@@ -242,17 +162,28 @@ class PizzaOrder
         return $pizza;
     }
 
-    /**
-     * Starts a session and initializes the order array if no session is running.
-     */
-    private function startSession()
-    {
-        if (session_id() == "") session_start();
-        if (! $_SESSION[$this->pizzaOrderSessionIndex]) $_SESSION[$this->pizzaOrderSessionIndex] = array();
-    }
-
 
     // Get information about the order
+
+    /**
+     * Returns the amount of pizzas in the order by id.
+     *
+     * @param int $_pizzaId The pizza id
+     *
+     * @return int The amount of order pizzas with that id
+     *
+     * @throws \PropelException
+     */
+    public function getAmountOrderPizzasById(int $_pizzaId)
+    {
+        foreach ($this->orderPizzas as $orderPizza)
+        {
+            if ($orderPizza->getPizza()->getId() == $_pizzaId) return $orderPizza->getAmount();
+        }
+
+        return 0;
+    }
+
     /**
      * Returns the order array.
      *
@@ -264,6 +195,21 @@ class PizzaOrder
     }
 
     /**
+     * Returns an order pizza from the order with a specific order code.
+     *
+     * @param String $_orderCode The order code
+     *
+     * @return OrderPizza|bool The order pizza or false
+     */
+    public function getOrderPizza(String $_orderCode)
+    {
+        $orderPizza = $this->orderPizzas[$_orderCode];
+
+        if ($orderPizza) return $orderPizza;
+        else return false;
+    }
+
+    /**
      * Returns the pizza ids of the order pizzas.
      *
      * @return int[] The pizza ids of the order pizzas
@@ -271,6 +217,25 @@ class PizzaOrder
     public function getPizzaOrderCodes()
     {
         return array_keys($this->orderPizzas);
+    }
+
+    /**
+     * Returns the pizzas that are currently stored in the order.
+     *
+     * @return Pizza[] The list of pizzas
+     *
+     * @throws \PropelException
+     */
+    public function getPizzas()
+    {
+        $pizzas = array();
+
+        foreach ($this->orderPizzas as $orderPizza)
+        {
+            $pizzas[] = $orderPizza->getPizza();
+        }
+
+        return $pizzas;
     }
 
     /**
@@ -311,13 +276,121 @@ class PizzaOrder
     }
 
 
-    // Change the order
+    // Manipulate the order pizzas
+
+    /**
+     * Adds an order pizza to the order.
+     *
+     * @param OrderPizza $_orderPizza The order pizza
+     *
+     * @return String Error message or empty string
+     *
+     * @throws \PropelException
+     */
+    public function addOrderPizza(OrderPizza $_orderPizza)
+    {
+        $orderCode = $_orderPizza->getPizza()->getOrderCode();
+
+        if (substr($orderCode, 0, 1) != "G")
+        { // If pizza is not a generated one
+
+            $pizzaId = $_orderPizza->getPizza()->getId();
+            if (! $pizzaId) return "Ungültige Pizza Id";
+
+            $pizza = PizzaQuery::create()->findOneById($pizzaId);
+            if (! $pizza) return "Ungültige Pizza Id";
+        }
+
+        if ($this->getOrderPizza($orderCode)) return $this->changeAmountOrderPizzas($_orderPizza);
+        else return $this->addNewOrderPizza($_orderPizza);
+    }
+
+    /**
+     * @param OrderPizza $_orderPizza
+     *
+     * @return String Empty string
+     *
+     * @throws \PropelException
+     */
+    public function addNewOrderPizza(OrderPizza $_orderPizza): String
+    {
+        $error = $this->validatePizzaAmount($_orderPizza);
+        if ($error) return $error;
+
+        $orderCode = $_orderPizza->getPizza()->getOrderCode();
+        $this->orderPizzas[$orderCode] = $_orderPizza;
+
+        $this->toSession();
+
+        return "";
+    }
+
+    /**
+     * @param OrderPizza $_orderPizza
+     *
+     * @return String Error message or empty string
+     *
+     * @throws \PropelException
+     */
+    public function changeAmountOrderPizzas(OrderPizza $_orderPizza): String
+    {
+        $orderCode = $_orderPizza->getPizza()->getOrderCode();
+        $orderPizza = $this->orderPizzas[$orderCode];
+
+        $error = $this->validatePizzaAmount($_orderPizza);
+        if ($error) return $error;
+
+        $newAmount = $orderPizza->getAmount() + $_orderPizza->getAmount();
+        $orderPizza->setAmount($newAmount);
+
+        $this->toSession();
+
+        return false;
+    }
+
+    /**
+     * Validates whether a pizza amount is ok.
+     *
+     * @param $_orderPizza
+     * @return bool|string
+     *
+     * @throws \PropelException
+     */
+    private function validatePizzaAmount(OrderPizza $_orderPizza)
+    {
+        $orderPizza = $this->getOrderPizza($_orderPizza->getPizza()->getOrderCode());
+
+        $pizzaAmount = $_orderPizza->getAmount();
+        if ($orderPizza) $pizzaAmount += $orderPizza->getAmount();
+
+        $totalPizzaAmount = $this->getTotalAmountOrderPizzas() + $pizzaAmount;
+
+        if ($pizzaAmount < 1 || $pizzaAmount > 50) return "Die Anzahl je Pizza muss zwischen 1 und 50 liegen.";
+        elseif ($totalPizzaAmount > 100) return "Es dürfen nicht mehr als 100 Pizzen auf einmal bestellt werden.";
+        return false;
+    }
+
+    /**
+     * Removes a order pizza from the order.
+     *
+     * @param String $_orderCode The order code of the pizza
+     *
+     * @throws \PropelException
+     */
+    public function removeOrderPizza(String $_orderCode)
+    {
+        unset($this->orderPizzas[$_orderCode]);
+        $this->toSession();
+    }
 
     /**
      * Resets the order to an empty array.
+     *
+     * @throws \PropelException
      */
     public function resetOrder()
     {
         $this->orderPizzas = array();
+        $this->toSession();
     }
 }

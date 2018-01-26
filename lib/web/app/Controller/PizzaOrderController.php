@@ -10,6 +10,7 @@ namespace PizzaService\Lib\Web\App\Controller;
 
 use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverter;
 use PizzaService\Lib\Web\PizzaOrder;
+use PizzaService\Propel\Models\OrderPizza;
 
 /**
  * Controller for the pizza order page.
@@ -59,12 +60,12 @@ class PizzaOrderController
      */
     public function showPizzaOrder(): String
     {
-        if ($_GET["delete"]) $this->pizzaOrder->removePizza($_GET["delete"]);
+        if ($_GET["delete"]) $this->pizzaOrder->removeOrderPizza($_GET["delete"]);
 
         $templateData = array(
             "totalAmountPizzas" => $this->pizzaOrder->getTotalAmountOrderPizzas(),
-            "pizzas" => $this->getTemplateArray($this->pizzaOrder->getPizzas(), $this->pizzaOrderHandler->getOrder()),
-            "totalPrice" => $this->pizzaOrderHandler->getTotalPrice()
+            "pizzas" => $this->getTemplateArray($this->pizzaOrder->getOrder()),
+            "totalPrice" => $this->pizzaOrder->getTotalPrice()
         );
 
         return $this->twig->render("pizzaOrder.twig", $templateData);
@@ -74,16 +75,21 @@ class PizzaOrderController
      * Updates the amount of order pizzas for a single pizza.
      *
      * @return String Empty string or error message
+     *
+     * @throws \PropelException
      */
     public function changeAmount(): String
     {
         $pizzaId = (int)$_GET["pizza-id"];
         $amount = (int)$_GET["amount"];
 
-        $difference = $amount - $this->pizzaOrderHandler->getAmountOrderPizzas($pizzaId);
+        $difference = $amount - $this->pizzaOrder->getAmountOrderPizzasById($pizzaId);
 
-        $error = $this->pizzaOrderHandler->changeAmountPizzas($pizzaId, $difference);
+        $orderPizza = new OrderPizza();
+        $orderPizza->setPizzaId($pizzaId)
+                   ->setAmount($difference);
 
+        $error = $this->pizzaOrder->changeAmountOrderPizzas($orderPizza);
         if ($error) return $error;
         else return "";
     }

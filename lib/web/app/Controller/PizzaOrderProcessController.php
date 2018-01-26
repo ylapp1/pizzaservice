@@ -28,7 +28,6 @@ use PizzaService\Propel\Models\HouseNumberQuery;
 use PizzaService\Propel\Models\LastName;
 use PizzaService\Propel\Models\LastNameQuery;
 use PizzaService\Propel\Models\Order;
-use PizzaService\Propel\Models\OrderPizza;
 use PizzaService\Propel\Models\PizzaQuery;
 use PizzaService\Propel\Models\Street;
 use PizzaService\Propel\Models\StreetName;
@@ -325,17 +324,19 @@ class PizzaOrderProcessController
      */
     private function validateOrder()
     {
-        $totalAmountPizzas = $this->pizzaOrderHandler->getTotalAmountOrderPizzas();
+        $totalAmountPizzas = $this->pizzaOrder->getTotalAmountOrderPizzas();
 
         if ($totalAmountPizzas == 0) return "Fehler: Die Bestellung ist leer";
         elseif ($totalAmountPizzas > 100) return "Fehler: Es dürfen nicht mehr als 100 Pizzas auf einmal bestellt werden";
         else
         {
-            foreach ($this->pizzaOrderHandler->getOrder() as $pizzaId => $amount)
+            foreach ($this->pizzaOrder->getOrder() as $orderCode => $orderPizza)
             {
+                $pizzaId = $orderPizza->getPizza()->getId();
                 $pizza = PizzaQuery::create()->findOneById($pizzaId);
+
                 if (! $pizza) return "Fehler: Ungültige Pizza ID in der Bestellung";
-                elseif ($amount > 50) return "Fehler: Eine Pizza in der Bestellung ist über 50 mal bestellt worden.";
+                elseif ($orderPizza->getAmount() > 50) return "Fehler: Eine Pizza in der Bestellung ist über 50 mal bestellt worden.";
             }
         }
 
@@ -359,12 +360,8 @@ class PizzaOrderProcessController
         $order->setCustomer($_customer);
 
         // Add pizzas to the order
-        foreach ($this->pizzaOrderHandler->getOrder() as $pizzaId => $amount)
+        foreach ($this->pizzaOrder->getOrder() as $orderPizza)
         {
-            $orderPizza = new OrderPizza();
-            $orderPizza->setPizzaId($pizzaId)
-                       ->setAmount($amount);
-
             $order->addOrderPizza($orderPizza);
         }
 
@@ -388,7 +385,7 @@ class PizzaOrderProcessController
         if ($error) return $error;
 
         $this->getOrder($this->getCustomer())->save();
-        $this->pizzaOrderHandler->resetOrder();
+        $this->pizzaOrder->resetOrder();
 
         return "";
     }

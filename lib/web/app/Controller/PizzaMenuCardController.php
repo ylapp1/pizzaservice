@@ -87,8 +87,8 @@ class PizzaMenuCardController
         $amount = (int)$_GET["amount"];
 
         $orderPizza = new OrderPizza();
-        $orderPizza->setPizzaId($pizzaId);
-        $orderPizza->setAmount($amount);
+        $orderPizza->setPizzaId($pizzaId)
+                   ->setAmount($amount);
 
         $error = $this->pizzaOrder->addOrderPizza($orderPizza);
         if ($error) return $error;
