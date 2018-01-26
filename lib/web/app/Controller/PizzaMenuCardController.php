@@ -10,7 +10,8 @@ namespace PizzaService\Lib\Web\App\Controller;
 
 use Criteria;
 use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverter;
-use PizzaService\Lib\Web\PizzaOrderSession\PizzaOrderHandler;
+use PizzaService\Lib\Web\PizzaOrder;
+use PizzaService\Propel\Models\OrderPizza;
 use PizzaService\Propel\Models\PizzaQuery;
 
 /**
@@ -21,11 +22,11 @@ class PizzaMenuCardController
     use PizzaListConverter;
 
     /**
-     * The pizza order handler.
+     * The pizza order.
      *
-     * @var PizzaOrderHandler $pizzaOrderHandler
+     * @var PizzaOrder $pizzaOrder
      */
-    private $pizzaOrderHandler;
+    private $pizzaOrder;
 
     /**
      * The template renderer
@@ -39,10 +40,12 @@ class PizzaMenuCardController
      * PizzaMenuCardController constructor.
      *
      * @param \Twig_Environment $_twig The template renderer
+     *
+     * @throws \PropelException
      */
     public function __construct(\Twig_Environment $_twig)
     {
-        $this->pizzaOrderHandler = new PizzaOrderHandler();
+        $this->pizzaOrder = new PizzaOrder();
         $this->twig = $_twig;
     }
 
@@ -65,7 +68,7 @@ class PizzaMenuCardController
 
         return $this->twig->render("pizzaMenuCard.twig",
             array(
-                "totalAmountPizzas" => $this->pizzaOrderHandler->getTotalAmountOrderPizzas(),
+                "totalAmountPizzas" => $this->pizzaOrder->getTotalAmountOrderPizzas(),
                 "pizzas" => $this->getTemplateArray($pizzas)
             )
         );
@@ -75,13 +78,19 @@ class PizzaMenuCardController
      * Adds an amount of pizzas to an order.
      *
      * @return String Error message or empty string
+     *
+     * @throws \PropelException
      */
     public function addPizzaToOrder(): String
     {
         $pizzaId = (int)$_GET["pizza-id"];
         $amount = (int)$_GET["amount"];
 
-        $error = $this->pizzaOrderHandler->changeAmountPizzas($pizzaId, $amount);
+        $orderPizza = new OrderPizza();
+        $orderPizza->setPizzaId($pizzaId);
+        $orderPizza->setAmount($amount);
+
+        $error = $this->pizzaOrder->addOrderPizza($orderPizza);
         if ($error) return $error;
         else return "";
     }

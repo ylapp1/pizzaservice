@@ -11,11 +11,10 @@ namespace PizzaService\Lib\Web\App\Controller;
 use Criteria;
 use PizzaService\Lib\PizzaGenerator\PizzaGenerator;
 use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverter;
-use PizzaService\Lib\Web\PizzaOrderSession\PizzaOrderSessionHandler;
-use PizzaService\Lib\Web\PizzaOrderSession\PizzaOrderHandler;
+use PizzaService\Lib\Web\PizzaOrder;
+use PizzaService\Lib\Web\RandomPizza;
 use PizzaService\Propel\Models\IngredientQuery;
 use PizzaService\Propel\Models\IngredientTranslationQuery;
-use PizzaService\Propel\Models\PizzaQuery;
 
 /**
  * Controller for the pizza generator page.
@@ -34,9 +33,16 @@ class PizzaGeneratorController
     /**
      * The pizza order session handler
      *
-     * @var PizzaOrderSessionHandler $pizzaOrderSessionHandler
+     * @var PizzaOrder $pizzaOrder
      */
-    private $pizzaOrderSessionHandler;
+    private $pizzaOrder;
+
+    /**
+     * The current random pizza
+     *
+     * @var RandomPizza $randomPizza
+     */
+    private $randomPizza;
 
     /**
      * The template renderer
@@ -50,11 +56,14 @@ class PizzaGeneratorController
      * PizzaMenuCardController constructor.
      *
      * @param \Twig_Environment $_twig The template renderer
+     *
+     * @throws \PropelException
      */
     public function __construct(\Twig_Environment $_twig)
     {
         $this->pizzaGenerator = new PizzaGenerator();
-        $this->pizzaOrderSessionHandler = new PizzaOrderSessionHandler();
+        $this->pizzaOrder = new PizzaOrder();
+        $this->randomPizza = new RandomPizza();
         $this->twig = $_twig;
     }
 
@@ -76,12 +85,12 @@ class PizzaGeneratorController
                                                            ->joinIngredient()
                                                            ->find();
 
-        $pizzaOrderHandler = new PizzaOrderHandler();
+        $this->randomPizza->fromSession();
 
         $templateData = array(
             "ingredients" => $ingredients,
-            "totalAmountPizzas" => $pizzaOrderHandler->getTotalAmountOrderPizzas(),
-            "pizzas" => $this->getTemplateArray($this->pizzaOrderSessionHandler->getRandomPizza())
+            "totalAmountPizzas" => $this->pizzaOrder->getTotalAmountOrderPizzas(),
+            "pizzas" => $this->getTemplateArray($this->randomPizza->getPizza())
         );
 
         return $this->twig->render("pizzaGenerator.twig", $templateData);
@@ -104,7 +113,8 @@ class PizzaGeneratorController
         $ingredients = IngredientQuery::create()->findById($ingredientIds);
 
         $pizza = $this->pizzaGenerator->generatePizza($ingredients);
-        $this->pizzaOrderSessionHandler->setRandomPizza($pizza);
+        $this->randomPizza->setPizza($pizza);
+        $this->randomPizza->toSession();
 
         // Return only the rendered pizza table from the pizzaGenerator page template
         $templateData = array(
@@ -113,33 +123,5 @@ class PizzaGeneratorController
         $template = $this->twig->load("pizzaGenerator.twig");
 
         return $template->renderBlock("pizzaData", $templateData);
-    }
-
-    /**
-     * Saves the random generated pizza to the database.
-     *
-     * @return String The pizza id or the string "false"
-     *
-     * @throws \Exception
-     * @throws \PropelException
-     */
-    public function saveGeneratedPizza(): String
-    {
-        $pizzas = $this->pizzaOrderSessionHandler->getRandomPizza();
-
-        if ($pizzas != array())
-        {
-            // Check whether a pizza with that name already exists
-            $pizza = PizzaQuery::create()->findOneByOrderCode($pizzas[0]->getOrderCode());
-
-            if (! $pizza)
-            {
-                $pizzas[0]->save();
-                return $pizzas[0]->getId();
-            }
-            else return $pizza->getid();
-
-        }
-        else return "false";
     }
 }

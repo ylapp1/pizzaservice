@@ -9,7 +9,7 @@
 namespace PizzaService\Lib\Web\App\Controller;
 
 use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverter;
-use PizzaService\Lib\Web\PizzaOrderSession\PizzaOrderHandler;
+use PizzaService\Lib\Web\PizzaOrder;
 
 /**
  * Controller for the pizza order page.
@@ -19,11 +19,11 @@ class PizzaOrderController
     use PizzaListConverter;
 
     /**
-     * The pizza order handler.
+     * The pizza order.
      *
-     * @var PizzaOrderHandler $pizzaOrderHandler
+     * @var PizzaOrder $pizzaOrder
      */
-    private $pizzaOrderHandler;
+    private $pizzaOrder;
 
     /**
      * The template renderer
@@ -37,10 +37,12 @@ class PizzaOrderController
      * PizzaMenuCardController constructor.
      *
      * @param \Twig_Environment $_twig The template renderer
+     *
+     * @throws \PropelException
      */
     public function __construct(\Twig_Environment $_twig)
     {
-        $this->pizzaOrderHandler = new PizzaOrderHandler();
+        $this->pizzaOrder = new PizzaOrder();
         $this->twig = $_twig;
     }
 
@@ -57,11 +59,11 @@ class PizzaOrderController
      */
     public function showPizzaOrder(): String
     {
-        if ($_GET["delete"]) $this->pizzaOrderHandler->removePizza($_GET["delete"]);
+        if ($_GET["delete"]) $this->pizzaOrder->removePizza($_GET["delete"]);
 
         $templateData = array(
-            "totalAmountPizzas" => $this->pizzaOrderHandler->getTotalAmountOrderPizzas(),
-            "pizzas" => $this->getTemplateArray($this->pizzaOrderHandler->getPizzas(), $this->pizzaOrderHandler->getOrder()),
+            "totalAmountPizzas" => $this->pizzaOrder->getTotalAmountOrderPizzas(),
+            "pizzas" => $this->getTemplateArray($this->pizzaOrder->getPizzas(), $this->pizzaOrderHandler->getOrder()),
             "totalPrice" => $this->pizzaOrderHandler->getTotalPrice()
         );
 

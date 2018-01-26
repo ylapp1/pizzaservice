@@ -8,7 +8,7 @@
 
 namespace PizzaService\Lib\Web\App\Controller;
 
-use PizzaService\Lib\Web\PizzaOrderSession\PizzaOrderHandler;
+use PizzaService\Lib\Web\PizzaOrder;
 use PizzaService\Propel\Models\City;
 use PizzaService\Propel\Models\CityName;
 use PizzaService\Propel\Models\CityNameQuery;
@@ -43,19 +43,21 @@ use PizzaService\Propel\Models\ZipQuery;
 class PizzaOrderProcessController
 {
     /**
-     * The pizza order handler.
+     * The pizza order.
      *
-     * @var PizzaOrderHandler $pizzaOrderHandler
+     * @var PizzaOrder $pizzaOrder
      */
-    private $pizzaOrderHandler;
+    private $pizzaOrder;
 
 
     /**
      * PizzaOrderProcessController constructor.
+     *
+     * @throws \PropelException
      */
     public function __construct()
     {
-        $this->pizzaOrderHandler = new PizzaOrderHandler();
+        $this->pizzaOrder = new PizzaOrder();
     }
 
 
