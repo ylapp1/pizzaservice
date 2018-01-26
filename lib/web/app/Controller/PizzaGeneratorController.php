@@ -15,6 +15,7 @@ use PizzaService\Lib\Web\PizzaOrder;
 use PizzaService\Lib\Web\RandomPizza;
 use PizzaService\Propel\Models\IngredientQuery;
 use PizzaService\Propel\Models\IngredientTranslationQuery;
+use PizzaService\Propel\Models\OrderPizza;
 
 /**
  * Controller for the pizza generator page.
@@ -90,7 +91,7 @@ class PizzaGeneratorController
         $templateData = array(
             "ingredients" => $ingredients,
             "totalAmountPizzas" => $this->pizzaOrder->getTotalAmountOrderPizzas(),
-            "pizzas" => $this->getTemplateArray($this->randomPizza->getPizza())
+            "pizzas" => $this->getTemplateArray(array($this->randomPizza->pizza()))
         );
 
         return $this->twig->render("pizzaGenerator.twig", $templateData);
@@ -114,7 +115,6 @@ class PizzaGeneratorController
 
         $pizza = $this->pizzaGenerator->generatePizza($ingredients);
         $this->randomPizza->setPizza($pizza);
-        $this->randomPizza->toSession();
 
         // Return only the rendered pizza table from the pizzaGenerator page template
         $templateData = array(
@@ -123,5 +123,25 @@ class PizzaGeneratorController
         $template = $this->twig->load("pizzaGenerator.twig");
 
         return $template->renderBlock("pizzaData", $templateData);
+    }
+
+    /**
+     * Adds an amount of pizzas to an order.
+     *
+     * @return String Error message or empty string
+     *
+     * @throws \PropelException
+     */
+    public function addRandomPizzaToOrder()
+    {
+        $amount = (int)$_GET["amount"];
+
+        $orderPizza = new OrderPizza();
+        $orderPizza->setPizza($this->randomPizza->pizza())
+                   ->setAmount($amount);
+
+        $error = $this->pizzaOrder->addOrderPizza($orderPizza);
+        if ($error) return $error;
+        else return "";
     }
 }

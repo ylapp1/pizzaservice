@@ -33,21 +33,14 @@ $(document).ready(function(){
 
     $(document).on("click", "button:not(.generate-pizza-button)", function(){
 
-        var generatedPizzaId = "false";
         var button = $(this);
 
-        // Save the generated pizza in the database
-        $.ajax({url: "web/pizza-generator/save-generated-pizza",
-            type: "get",
-            dataType: "text",
-            success: function(_returnValue){
-              generatedPizzaId = _returnValue;
-            },
-            complete: function(){
-              addGeneratedPizzaToOrder(generatedPizzaId, button);
-            }
-        });
+        var amount = button.parent().find("input").val();
+        amount = Number(amount);
 
+        var tableCells = button.parents().eq(2);
+
+        addGeneratedPizzaToOrder(tableCells.find("td:nth-child(2)").text(), amount);
     })
 
 });
@@ -55,16 +48,24 @@ $(document).ready(function(){
 /**
  * Adds the generated pizza to the order.
  *
- * @param _generatedPizzaId
- * @param _button
+ * @param _pizzaName String The name of the pizza
+ * @param _amount int The amount of pizzas
  */
-function addGeneratedPizzaToOrder(_generatedPizzaId, _button)
+function addGeneratedPizzaToOrder(_pizzaName, _amount)
 {
-    if (_generatedPizzaId !== "false")
-    {
-        var amount = _button.parent().find("input").val();
-        amount = Number(amount);
+    // Add pizza to order list
+    $.ajax({url: "web/pizza-generator/addrandompizzatoorder.php?amount=" + _amount,
+        type: "get",
+        dataType: "text",
+        success: function(_error){
 
-        addPizzaToOrder(_generatedPizzaId, _button.parents().eq(2).find("td:nth-child(2)").text(), amount);
-    }
+            if (_error !== "") showErrorMessage(_error);
+            else
+            {
+                // Update the pizza counter
+                setPizzaCount(getPizzaCount() + _amount);
+                showSuccessMessage(_amount + "x \"" + _pizzaName + "\" erfolgreich zur Bestellung hinzugefügt!");
+            }
+        }
+    });
 }

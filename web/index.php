@@ -59,8 +59,8 @@ $pizzaGenerator->get("/", function() use($pizzaGeneratorController) {
 $pizzaGenerator->get("/generate-pizza/", function() use($pizzaGeneratorController) {
     return $pizzaGeneratorController->generatePizza();
 });
-$pizzaGenerator->get("/save-generated-pizza/", function() use($pizzaGeneratorController) {
-    return $pizzaGeneratorController->saveGeneratedPizza();
+$pizzaGenerator->get("/addrandompizzatoorder.php", function() use($pizzaGeneratorController) {
+    return $pizzaGeneratorController->addRandomPizzaToOrder();
 });
 
 $app->mount("/", $pizzaMenuCard);
