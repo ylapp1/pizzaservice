@@ -97,8 +97,15 @@ class PizzaGenerator
      */
     private function getNewOrderCode(PizzaOrder $_pizzaOrder): String
     {
-        // Find the random pizza with the highest order code
-        $pizza = PizzaQuery::create()->filterByOrderCode("G*")
+        /*
+         * Find the random pizza with the highest order code
+         *
+         * The "withColumn" is necessary to additionally order the results by the length of the order code. This results
+         * in a natural order despite the leading "G".
+         */
+        $pizza = PizzaQuery::create()->withColumn("LENGTH(order_code)", "order_code_length")
+                                     ->filterByOrderCode("G*")
+                                     ->orderBy("order_code_length", "desc")
                                      ->orderByOrderCode("desc")
                                      ->findOne();
 
