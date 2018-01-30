@@ -332,11 +332,14 @@ class PizzaOrderProcessController
         {
             foreach ($this->pizzaOrder->getOrder() as $orderCode => $orderPizza)
             {
-                $pizzaId = $orderPizza->getPizza()->getId();
-                $pizza = PizzaQuery::create()->findOneById($pizzaId);
+                if ($orderPizza->getAmount() > 50) return "Fehler: Eine Pizza in der Bestellung ist über 50 mal bestellt worden.";
 
-                if (! $pizza) return "Fehler: Ungültige Pizza ID in der Bestellung";
-                elseif ($orderPizza->getAmount() > 50) return "Fehler: Eine Pizza in der Bestellung ist über 50 mal bestellt worden.";
+                $pizzaId = $orderPizza->getPizza()->getId();
+                if ($pizzaId)
+                { // If pizza id is set in the OrderPizza object
+                    $pizza = PizzaQuery::create()->findOneById($pizzaId);
+                    if (! $pizza) return "Fehler: Ungültige Pizza ID in der Bestellung";
+                }
             }
         }
 

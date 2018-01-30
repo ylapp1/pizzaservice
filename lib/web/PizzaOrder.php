@@ -250,7 +250,7 @@ class PizzaOrder
         $amountOrderPizzas = 0;
         foreach ($this->orderPizzas as $orderPizza)
         {
-            $amountOrderPizzas = $orderPizza->getAmount();
+            $amountOrderPizzas += $orderPizza->getAmount();
         }
 
         return $amountOrderPizzas;

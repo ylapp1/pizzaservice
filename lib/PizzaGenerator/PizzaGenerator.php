@@ -107,10 +107,10 @@ class PizzaGenerator
             $highestOrderCode = $pizza->getOrderCode();
             $highestOrderCodeNumber = (int)str_replace("G", "", $highestOrderCode);
         }
-        else $highestOrderCodeNumber = 1;
+        else $highestOrderCodeNumber = 0;
 
         // Check the pizzas order codes that are in the order but not saved in the database yet
-        $newOrderCodeNumber = $highestOrderCodeNumber;
+        $newOrderCodeNumber = $highestOrderCodeNumber + 1;
         while ($_pizzaOrder->getOrderPizza("G" . $newOrderCodeNumber))
         {
             $newOrderCodeNumber++;
