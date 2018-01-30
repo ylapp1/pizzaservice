@@ -23,8 +23,6 @@ class IngredientListConverter
      * @param String $_separationString The string that will be printed between the ingredients
      *
      * @return String The list of ingredients as a string
-     *
-     * @throws \PropelException
      */
     public function pizzaIngredientsToString($_pizzaIngredients, String $_separationString): String
     {
@@ -35,8 +33,8 @@ class IngredientListConverter
         {
             if ($pizzaIngredient instanceOf PizzaIngredient)
             {
-                $ingredient = $pizzaIngredient->getIngredient();
-                $ingredientName = IngredientTranslationQuery::create()->filterByIngredient($ingredient)
+                $ingredientId = $pizzaIngredient->getIngredientId();
+                $ingredientName = IngredientTranslationQuery::create()->filterByIngredientId($ingredientId)
                                                                       ->filterByLanguageCode("de")
                                                                       ->findOne()
                                                                       ->getIngredientName();

@@ -162,7 +162,7 @@ class CreatePizzaCommand extends Command
         foreach ($selectedIngredients as $selectedIngredient)
         {
             $ingredientId = IngredientTranslationQuery::create()->findOneByIngredientName($selectedIngredient)
-                                                              ->getIngredientId();
+                                                                ->getIngredientId();
             $amountGrams = 0;
 
             while (! $amountGrams)
