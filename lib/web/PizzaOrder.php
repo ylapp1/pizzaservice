@@ -65,6 +65,8 @@ class PizzaOrder
     {
         $this->startSession();
 
+        unset($_SESSION[$this->pizzaOrderSessionIndex]);
+
         foreach ($this->orderPizzas as $orderCode => $orderPizza)
         {
             $pizzaId = $orderPizza->getPizza()->getId();
@@ -101,7 +103,7 @@ class PizzaOrder
             {
                 $pizza = $this->pizzaFromArray($pizzaOrderData);
                 $orderPizza->setPizza($pizza)
-                           ->setAmount($pizzaOrderData["amount"]);
+                           ->setAmount($pizzaOrderData["Amount"]);
             }
             else
             {

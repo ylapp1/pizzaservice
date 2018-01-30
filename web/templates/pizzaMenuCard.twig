@@ -22,7 +22,7 @@
 
         {% block actionButtonColumnTitle %}Bestellung{% endblock %}
         {% block actionButton %}
-            <button type="button" class="btn btn-primary" data-pizza-id="{{ pizza.id }}">Bestellen</button>
+            <button type="button" class="btn btn-primary" data-pizza-order-code="{{ pizza.orderCode }}">Bestellen</button>
         {% endblock %}
         {% block pizzaListEmpty %}Es gibt noch keine Pizzas{% endblock %}
 

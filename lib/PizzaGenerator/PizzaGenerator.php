@@ -8,6 +8,7 @@
 
 namespace PizzaService\Lib\PizzaGenerator;
 
+use PizzaService\Lib\Web\PizzaOrder;
 use PizzaService\Propel\Models\Ingredient;
 use PizzaService\Propel\Models\IngredientTranslationQuery;
 use PizzaService\Propel\Models\Pizza;
@@ -40,12 +41,13 @@ class PizzaGenerator
      * Generates a random pizza.
      *
      * @param Ingredient[] $_allowedIngredients The ingredients that may be on the pizza
+     * @param PizzaOrder $_pizzaOrder The pizza order
      *
      * @return Pizza The random pizza
      *
      * @throws \PropelException
      */
-    public function generatePizza($_allowedIngredients): Pizza
+    public function generatePizza($_allowedIngredients, PizzaOrder $_pizzaOrder): Pizza
     {
         // Generate pizza with unique ingredient combination (including amount of grams)
         do
@@ -65,7 +67,7 @@ class PizzaGenerator
         } while($pizzaExists);
 
         $pizza->setName($pizzaName);
-        $pizza->setOrderCode($this->getNewOrderCode());
+        $pizza->setOrderCode($this->getNewOrderCode($_pizzaOrder));
         $pizza->setPrice($this->getRandomPrice());
 
         return $pizza;
@@ -89,9 +91,11 @@ class PizzaGenerator
      * Generated pizzas have the prefix G in order to be able to distinguish between pizzas that were entered with
      * the pizzatool and random pizzas
      *
+     * @param PizzaOrder $_pizzaOrder The pizza order
+     *
      * @return String The order code
      */
-    private function getNewOrderCode(): String
+    private function getNewOrderCode(PizzaOrder $_pizzaOrder): String
     {
         // Find the random pizza with the highest order code
         $pizza = PizzaQuery::create()->filterByOrderCode("G*")
@@ -103,9 +107,14 @@ class PizzaGenerator
             $highestOrderCode = $pizza->getOrderCode();
             $highestOrderCodeNumber = (int)str_replace("G", "", $highestOrderCode);
         }
-        else $highestOrderCodeNumber = 0;
+        else $highestOrderCodeNumber = 1;
 
-        $newOrderCodeNumber = $highestOrderCodeNumber + 1;
+        // Check the pizzas order codes that are in the order but not saved in the database yet
+        $newOrderCodeNumber = $highestOrderCodeNumber;
+        while ($_pizzaOrder->getOrderPizza("G" . $newOrderCodeNumber))
+        {
+            $newOrderCodeNumber++;
+        }
 
         return "G" . $newOrderCodeNumber;
     }

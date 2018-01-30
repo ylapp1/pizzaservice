@@ -83,11 +83,13 @@ class PizzaMenuCardController
      */
     public function addPizzaToOrder(): String
     {
-        $pizzaId = (int)$_GET["pizza-id"];
+        $pizzaOrderCode = (int)$_GET["pizza-order-code"];
         $amount = (int)$_GET["amount"];
 
+        $pizza = PizzaQuery::create()->findOneByOrderCode($pizzaOrderCode);
+
         $orderPizza = new OrderPizza();
-        $orderPizza->setPizzaId($pizzaId)
+        $orderPizza->setPizza($pizza)
                    ->setAmount($amount);
 
         $error = $this->pizzaOrder->addOrderPizza($orderPizza);

@@ -92,14 +92,14 @@ function setPizzaCount(_amountPizzas)
 /**
  * Adds a pizza to the order.
  *
- * @param _pizzaId int The id of the pizza
+ * @param _pizzaOrderCode int The id of the pizza
  * @param _pizzaName String The name of the pizza
  * @param _amount int The amount of pizzas
  */
-function addPizzaToOrder(_pizzaId, _pizzaName, _amount)
+function addPizzaToOrder(_pizzaOrderCode, _pizzaName, _amount)
 {
     // Add pizza to order list
-    $.ajax({url: "web/addpizzatoorder.php?pizza-id=" + _pizzaId + "&amount=" + _amount,
+    $.ajax({url: "web/addpizzatoorder.php?pizza-order-code=" + _pizzaOrderCode + "&amount=" + _amount,
         type: "get",
         dataType: "text",
         success: function(_error){

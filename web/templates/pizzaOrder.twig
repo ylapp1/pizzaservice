@@ -22,7 +22,7 @@
 
         {% block actionButtonColumnTitle %}Anpassen{% endblock %}
         {% block actionButton %}
-            <a class="btn btn-danger" href="web/order?delete={{ pizza.id }}">Löschen</a>
+            <a class="btn btn-danger" href="web/order?delete={{ pizza.orderCode }}">Löschen</a>
         {% endblock %}
         {% block pizzaListEmpty %}Die Bestellung ist leer{% endblock %}
 

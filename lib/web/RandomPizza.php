@@ -68,7 +68,11 @@ class RandomPizza
     public function fromSession()
     {
         $this->startSession();
-        $this->randomPizza = $this->pizzaFromArray($_SESSION[$this->randomPizzaSessionIndex]);
+
+        if ($_SESSION[$this->randomPizzaSessionIndex])
+        {
+            $this->randomPizza = $this->pizzaFromArray($_SESSION[$this->randomPizzaSessionIndex]);
+        }
     }
 
     /**

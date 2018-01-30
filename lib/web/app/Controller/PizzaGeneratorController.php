@@ -113,7 +113,7 @@ class PizzaGeneratorController
         $ingredientIds = json_decode($_GET["ingredientIds"]);
         $ingredients = IngredientQuery::create()->findById($ingredientIds);
 
-        $pizza = $this->pizzaGenerator->generatePizza($ingredients);
+        $pizza = $this->pizzaGenerator->generatePizza($ingredients, $this->pizzaOrder);
         $this->randomPizza->setPizza($pizza);
 
         // Return only the rendered pizza table from the pizzaGenerator page template

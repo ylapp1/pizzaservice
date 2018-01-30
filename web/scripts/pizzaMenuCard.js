@@ -14,7 +14,7 @@ $(document).ready(function(){
 
         amount = Number(amount);
 
-        addPizzaToOrder(button.data("pizza-id"), button.parents().eq(2).find("td:nth-child(2)").text(), amount);
+        addPizzaToOrder(button.data("pizza-order-code"), button.parents().eq(2).find("td:nth-child(2)").text(), amount);
 
     });
 

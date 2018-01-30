@@ -50,33 +50,16 @@ trait PizzaListConverter
      *
      * @throws \PropelException
      */
-    private function pizzaToTemplateArray(Pizza $_pizza, int $_amount = 0)
+    private function pizzaToTemplateArray(Pizza $_pizza, int $_amount = 0): array
     {
         $ingredientListConverter = new IngredientListConverter();
-
-
-        $pizzaIngredientIds = array();
-        foreach ($_pizza->getIngredients() as $pizzaIngredient)
-        {
-            $pizzaIngredientIds[] = $pizzaIngredient->getId();
-        }
-
-        $pizzaIngredients = PizzaIngredientQuery::create()->filterById($pizzaIngredientIds)
-                                                          ->useIngredientQuery()
-                                                          ->useIngredientTranslationQuery()
-                                                          ->filterByLanguageCode("de")
-                                                          ->orderByIngredientName()
-                                                          ->endUse()
-                                                          ->endUse()
-                                                          ->find();
 
         $outputPizza = array(
             "orderCode" => $_pizza->getOrderCode(),
             "name" => $_pizza->getName(),
             "price" => $_pizza->getPrice(),
-            "pizzaIngredients" => $ingredientListConverter->pizzaIngredientsToString($pizzaIngredients, "\n"),
-            "amount" => $_amount,
-            "id" => $_pizza->getId()
+            "pizzaIngredients" => $ingredientListConverter->pizzaIngredientsToString($_pizza->getPizzaIngredients(), "\n"),
+            "amount" => $_amount
         );
 
         return $outputPizza;
