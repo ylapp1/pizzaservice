@@ -93,4 +93,18 @@ class PizzaOrderController
         if ($error) return $error;
         else return "";
     }
+
+    /**
+     * Clears the order.
+     *
+     * @return String Empty string
+     *
+     * @throws \PropelException
+     */
+    public function resetOrder(): String
+    {
+        $this->pizzaOrder->resetOrder();
+
+        return "";
+    }
 }

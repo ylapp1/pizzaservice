@@ -5,11 +5,14 @@
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
+var pizzaTableBody;
+var resetOrderButton;
 var totalPrice;
 
 $(document).ready(function(){
 
-    var pizzaTableBody = $(".pizza-table tbody");
+    pizzaTableBody = $(".pizza-table tbody");
+    resetOrderButton = $(".reset-order-button");
     totalPrice = $(".totalPrice span");
 
     // Event handler for the order button
@@ -47,10 +50,7 @@ $(document).ready(function(){
                 if (_text.indexOf("Fehler") === -1)
                 {
                     showSuccessMessage("<strong>Vielen Dank!</strong> Die Bestellung wurde entgegengenommen!");
-                    pizzaTableBody.find("tr").remove();
-                    pizzaTableBody.append("<tr><td colspan=\"6\" class=\"text-center\">Die Bestellung ist leer</td></tr>");
-                    setPizzaCount(0);
-                    setTotalPrice(0);
+                    resetOrder();
                 }
                 else showErrorMessage(_text.replace("Fehler: ", ""));
             },
@@ -102,6 +102,24 @@ $(document).ready(function(){
         });
     });
 
+    resetOrderButton.on("click", function(){
+
+        $.ajax({url: "web/order/reset-order",
+            type: "get",
+            dataType: "text",
+            success: function(_error)
+            {
+                if (_error === "")
+                {
+                    showSuccessMessage("Bestellung zurückgesetzt");
+                    resetOrder();
+                }
+
+            }
+        })
+
+    })
+
 });
 
 /**
@@ -122,4 +140,13 @@ function getTotalPrice()
 function setTotalPrice(_totalPrice)
 {
     totalPrice.text(_totalPrice.toFixed(2));
+}
+
+function resetOrder()
+{
+    pizzaTableBody.find("tr").remove();
+    pizzaTableBody.append("<tr><td colspan=\"6\" class=\"text-center alert alert-info\">Die Bestellung ist leer</td></tr>");
+    setPizzaCount(0);
+    setTotalPrice(0);
+    resetOrderButton.prop("disabled", true);
 }

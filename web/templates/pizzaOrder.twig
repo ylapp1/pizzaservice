@@ -17,6 +17,9 @@
 {# Main content #}
 {% block content %}
 
+    <button class="btn btn-warning pull-right reset-order-button"
+            {% if pizzas|length == 0 %}disabled{% endif %}>Bestellung leeren</button>
+
     {# Table of pizzas in the order list #}
     {% embed "blocks/pizzaTable.twig" %}
 

@@ -53,6 +53,9 @@ $pizzaOrder->get("/", function() use($pizzaOrderController) {
 $pizzaOrder->get("/changeamount.php", function() use($pizzaOrderController) {
     return $pizzaOrderController->changeAmount();
 });
+$pizzaOrder->get("/reset-order", function() use($pizzaOrderController){
+    return $pizzaOrderController->resetOrder();
+});
 $pizzaOrder->get("/process/", function() use($pizzaOrderProcessController){
     return $pizzaOrderProcessController->addOrder();
 });
