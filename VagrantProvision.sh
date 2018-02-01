@@ -80,9 +80,6 @@ mysql -u root -proot -e "FLUSH PRIVILEGES;"
 # Allow remote connection to database by commenting out the line "bind-address = 127.0.0.1"
 sed -i "/bind-address/s/^/#/" /etc/mysql/mysql.conf.d/mysqld.cnf
 
-# Restart mysql server in order to use the updated configuration
-service mysql restart
-
 
 # Configure apache for silex
 a2enmod rewrite
@@ -105,6 +102,9 @@ sed -i "/;date.timezone =/c date.timezone = \"Europe/Berlin\"" /etc/php/7.0/cli/
 
 # Restart apache
 service apache2 restart
+
+# Restart mysql server in order to use the updated configuration and the updated time zone
+service mysql restart
 
 # Fixes the bug that backspace prints a character in a CMD vagrant ssh session
 echo "stty sane" >> /home/vagrant/.bashrc
