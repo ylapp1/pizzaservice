@@ -49,11 +49,15 @@ class PizzaGenerator
      */
     public function generatePizza($_allowedIngredients, PizzaOrder $_pizzaOrder): Pizza
     {
-        $pizza = new Pizza();
-        $this->addRandomIngredients($pizza, $_allowedIngredients);
+        do
+        {
+            $pizza = new Pizza();
+            $this->addRandomIngredients($pizza, $_allowedIngredients);
 
-        $existingPizza = $this->generatedPizzaExists($pizza, count($pizza->getPizzaIngredients()));
-        if ($existingPizza) return $existingPizza;
+            $existingPizza = $this->generatedPizzaExists($pizza, count($pizza->getPizzaIngredients()));
+            if ($existingPizza) return $existingPizza;
+
+        } while ($this->generatedPizzaExistsInDatabase($pizza, count($pizza->getPizzaIngredients()),false));
 
 
         // Generate unique pizza name
@@ -73,17 +77,19 @@ class PizzaGenerator
     /**
      * Checks whether a generated pizza ingredient grams/type combination already exists in the current order or the database.
      *
-     * @param Pizza $_pizza
-     * @param int $_amountIngredients
-     * @return bool|Pizza
+     * @param Pizza $_generatedPizza The generated Pizza
+     * @param int $_numberOfIngredients The number of ingredients on the generated pizza
+     *
+     * @return Pizza|bool The existing pizza or false
+     *
      * @throws \PropelException
      */
-    private function generatedPizzaExists(Pizza $_pizza, int $_amountIngredients)
+    private function generatedPizzaExists(Pizza $_generatedPizza, int $_numberOfIngredients)
     {
-        $existingPizza = $this->generatedPizzaExistsInDatabase($_pizza, $_amountIngredients);
+        $existingPizza = $this->generatedPizzaExistsInDatabase($_generatedPizza, $_numberOfIngredients, true);
         if ($existingPizza) return $existingPizza;
 
-        $existingPizza = $this->generatedPizzaExistsInOrder($_pizza, $_amountIngredients);
+        $existingPizza = $this->generatedPizzaExistsInOrder($_generatedPizza, $_numberOfIngredients);
         if ($existingPizza) return $existingPizza;
 
         return false;
@@ -93,18 +99,20 @@ class PizzaGenerator
      * Checks whether a generated pizza ingredient grams/type combination already exists in the database.
      *
      * @param Pizza $_generatedPizza The generated pizza
-     * @param int $_numberOfIngredients The number of ingredients that the generated pizza has
+     * @param int $_numberOfIngredients The number of ingredients on the generated pizza
+     * @param bool $_checkOnlyGenerated Indicates that only generated pizzas will be compared
      *
      * @return Pizza|boolean The existing pizza or false
      *
      * @throws \PropelException
      */
-    private function generatedPizzaExistsInDatabase(Pizza $_generatedPizza, int $_numberOfIngredients)
+    private function generatedPizzaExistsInDatabase(Pizza $_generatedPizza, int $_numberOfIngredients, bool $_checkOnlyGenerated)
     {
-        // Get generated pizzas with the same amount of ingredients
-        $existingPizzas = PizzaQuery::create()->joinpizzaIngredient()
-                                              ->filterByOrderCode("G*")
-                                              ->withColumn("COUNT(*)", "amount_ingredients")
+        // Get pizzas with the same amount of ingredients
+        $existingPizzasQuery = PizzaQuery::create()->joinpizzaIngredient();
+        if ($_checkOnlyGenerated) $existingPizzasQuery->filterByOrderCode("G*");
+
+        $existingPizzas = $existingPizzasQuery->withColumn("COUNT(*)", "amount_ingredients")
                                               ->groupBy("id")
                                               ->having("amount_ingredients = " . $_numberOfIngredients)
                                               ->find();
