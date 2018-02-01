@@ -10,7 +10,7 @@ $loader = require_once(__DIR__ . "/../vendor/autoload.php");
 $loader->addPsr4("PizzaService\\", __DIR__ . "/..");
 
 // Initialize Propel with the runtime configuration
-Propel::init(__DIR__ . "/../propel/conf/pizza_service-conf.php");
+Propel::init(__DIR__ . "/../Propel/Conf/pizza_service-conf.php");
 
 use PizzaService\Lib\ConfigLoader;
 use PizzaService\Lib\Web\App\Controller\PizzaGeneratorController;
