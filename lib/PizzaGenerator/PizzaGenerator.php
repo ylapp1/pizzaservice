@@ -10,7 +10,7 @@ namespace PizzaService\Lib\PizzaGenerator;
 
 use PizzaService\Lib\Web\PizzaOrder;
 use PizzaService\Propel\Models\Ingredient;
-use PizzaService\Propel\Models\IngredientTranslationQuery;
+use PizzaService\Propel\Models\IngredientQuery;
 use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\PizzaIngredient;
 use PizzaService\Propel\Models\PizzaQuery;
@@ -27,13 +27,68 @@ class PizzaGenerator
      */
     private $pizzaNameGenerator;
 
+    /**
+     * The default pizza ingredients data in the format ["id" => id, "name" => name, "grams" => grams]
+     *
+     * @var array  $defaultPizzaIngredientsData
+     */
+    private $defaultPizzaIngredientsData;
+
+    /**
+     * The maximum total weight of a random pizza
+     *
+     * @var int  $maxTotalWeight
+     */
+    private $maxTotalWeight;
+
+    /**
+     * The minimum price of a random pizza
+     *
+     * @var float  $minPrice
+     */
+    private $minPrice;
+
+    /**
+     * The maximum price of a random pizza
+     *
+     * @var float $maxPrice
+     */
+    private $maxPrice;
+
+    /**
+     * The minimum amount of grams per random ingredient
+     *
+     * @var int $minGrams
+     */
+    private $minGrams;
+
+    /**
+     * The maximum amount of grams per random ingredient
+     *
+     * @var int $maxGrams
+     */
+    private $maxGrams;
+
 
     /**
      * PizzaGenerator constructor.
+     *
+     * @param array $_defaultPizzaIngredientsData The default pizza ingredients data in the format ["id" => id, "name" => name, "grams" => grams]
+     * @param int $_maxTotalWeight The maximum total weight of a random pizza
+     * @param float $_minPrice The minimum price of a random pizza
+     * @param float $_maxPrice The maximum price of a random pizza
+     * @param int $_minGrams The minimum amount of grams per random ingredient
+     * @param int $_maxGrams The maximum amount of grams per random ingredient
      */
-    public function __construct()
+    public function __construct(array $_defaultPizzaIngredientsData, int $_maxTotalWeight, float $_minPrice, float $_maxPrice, int $_minGrams, int $_maxGrams)
     {
         $this->pizzaNameGenerator = new PizzaNameGenerator();
+        $this->defaultPizzaIngredientsData = $_defaultPizzaIngredientsData;
+        $this->maxTotalWeight = $_maxTotalWeight;
+        $this->minPrice = $_minPrice;
+        $this->maxPrice = $_maxPrice;
+        $this->minGrams = $_minGrams;
+        $this->maxGrams = $_maxGrams;
     }
 
 
@@ -199,7 +254,7 @@ class PizzaGenerator
      */
     private function getRandomPrice(): float
     {
-        $randomCents = rand(500, 1000);
+        $randomCents = rand($this->minPrice * 100, $this->maxPrice * 100);
         $randomEuros = (float)$randomCents/100;
 
         return $randomEuros;
@@ -256,30 +311,33 @@ class PizzaGenerator
     private function addRandomIngredients(Pizza $_pizza, $_allowedIngredients)
     {
         // Maximum allowed weight per pizza
-        $remainingWeight = 400;
+        $remainingWeight = $this->maxTotalWeight;
 
-        // Add 100 grams of dough for every pizza
-        $ingredientDough = IngredientTranslationQuery::create()->filterByLanguageCode("it")
-                                                               ->filterByIngredientName("Pasta")
-                                                               ->findOne()
-                                                               ->getIngredient();
+        $defaultIngredientIds = array_map(function($_data){
+            return (int)$_data["id"];
+        }, $this->defaultPizzaIngredientsData);
 
-        $remainingWeight = $this->addRandomIngredient($_pizza, $ingredientDough, 100, $remainingWeight);
+        // Add default ingredients
+        foreach ($this->defaultPizzaIngredientsData as $defaultPizzaIngredientData)
+        {
+            $ingredientId = (int)$defaultPizzaIngredientData["id"];
+            $ingredientGrams = (int)$defaultPizzaIngredientData["grams"];
 
+            $ingredient = IngredientQuery::create()->findOneById($ingredientId);
+
+            $remainingWeight = $this->addRandomIngredient($_pizza, $ingredient, $ingredientGrams, $remainingWeight);
+        }
+
+        // Add random ingredients
         $_allowedIngredients = (array)$_allowedIngredients;
         shuffle($_allowedIngredients);
 
         foreach ($_allowedIngredients as $ingredient)
         {
-            $ingredientName = IngredientTranslationQuery::create()->filterByLanguageCode("it")
-                                                                  ->filterByIngredient($ingredient)
-                                                                  ->findOne()
-                                                                  ->getIngredientName();
-
-            if ($ingredientName == "Pasta") continue;
+            if (in_array($ingredient->getId(), $defaultIngredientIds)) continue;
 
             // Add random ingredient
-            $randomGrams = rand(0, 200);
+            $randomGrams = rand($this->minGrams, $this->maxGrams);
             $remainingWeight = $this->addRandomIngredient($_pizza, $ingredient, $randomGrams, $remainingWeight);
 
             if ($remainingWeight == 0) break;

@@ -9,6 +9,7 @@
 namespace PizzaService\Lib\Web\App\Controller;
 
 use Criteria;
+use PizzaService\Lib\ConfigLoader;
 use PizzaService\Lib\PizzaGenerator\PizzaGenerator;
 use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverter;
 use PizzaService\Lib\Web\PizzaOrder;
@@ -23,6 +24,13 @@ use PizzaService\Propel\Models\OrderPizza;
 class PizzaGeneratorController
 {
     use PizzaListConverter;
+
+    /**
+     * The config loader
+     *
+     * @var ConfigLoader $configLoader
+     */
+    private $configLoader;
 
     /**
      * The random pizza generator
@@ -57,12 +65,23 @@ class PizzaGeneratorController
      * PizzaMenuCardController constructor.
      *
      * @param \Twig_Environment $_twig The template renderer
+     * @param ConfigLoader $_configLoader
      *
      * @throws \PropelException
      */
-    public function __construct(\Twig_Environment $_twig)
+    public function __construct(\Twig_Environment $_twig, ConfigLoader $_configLoader)
     {
-        $this->pizzaGenerator = new PizzaGenerator();
+        $this->configLoader = $_configLoader;
+
+        $pizzaGeneratorConfig = $_configLoader->getConfigValue("randomPizza");
+        $defaultIngredientsData = $pizzaGeneratorConfig["defaultIngredients"];
+        $maxTotalWeight = (float)$pizzaGeneratorConfig["maxTotalWeight"];
+        $minPrice = (float)$pizzaGeneratorConfig["pizzaPriceRange"]["minPrice"];
+        $maxPrice = (float)$pizzaGeneratorConfig["pizzaPriceRange"]["maxPrice"];
+        $minGrams = (int)$pizzaGeneratorConfig["ingredientsGramsRange"]["minGrams"];
+        $maxGrams = (int)$pizzaGeneratorConfig["ingredientsGramsRange"]["maxGrams"];
+
+        $this->pizzaGenerator = new PizzaGenerator($defaultIngredientsData, $maxTotalWeight, $minPrice, $maxPrice, $minGrams, $maxGrams);
         $this->pizzaOrder = new PizzaOrder();
         $this->randomPizza = new RandomPizza();
         $this->twig = $_twig;
@@ -81,10 +100,14 @@ class PizzaGeneratorController
      */
     public function showPizzaGenerator(): String
     {
-        $ingredients = IngredientTranslationQuery::create()->filterByLanguageCode("de")
-                                                           ->filterByIngredientName("Teig", Criteria::NOT_EQUAL)
-                                                           ->joinIngredient()
-                                                           ->find();
+        $pizzaGeneratorConfig = $this->configLoader->getConfigValue("randomPizza");
+
+        $ingredientTranslationQuery = IngredientTranslationQuery::create()->filterByLanguageCode("de");
+        foreach ($pizzaGeneratorConfig["defaultIngredients"] as $defaultIngredientData)
+        {
+            $ingredientTranslationQuery->filterByIngredientId($defaultIngredientData["id"], Criteria::NOT_EQUAL);
+        }
+        $ingredients = $ingredientTranslationQuery->find();
 
         $this->randomPizza->fromSession();
 

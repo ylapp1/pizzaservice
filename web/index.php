@@ -12,18 +12,24 @@ $loader->addPsr4("PizzaService\\", __DIR__ . "/..");
 // Initialize Propel with the runtime configuration
 Propel::init(__DIR__ . "/../propel/conf/pizza_service-conf.php");
 
-use Silex\Application;
+use PizzaService\Lib\ConfigLoader;
 use PizzaService\Lib\Web\App\Controller\PizzaGeneratorController;
 use PizzaService\Lib\Web\App\Controller\PizzaMenuCardController;
 use PizzaService\Lib\Web\App\Controller\PizzaOrderController;
 use PizzaService\Lib\Web\App\Controller\PizzaOrderProcessController;
+use Silex\Application;
 
 $app = new Application();
 $app->register(new Silex\Provider\TwigServiceProvider(), array(
     "twig.path" => __DIR__ . "/templates",
 ));
 
-$pizzaGeneratorController = new PizzaGeneratorController($app["twig"]);
+$configPath = __DIR__ . "/../config/config.json";
+if (! file_exists($configPath)) die("Fehler: Konfigurationsdatei \"config/config.json\" nicht gefunden!");
+
+$configLoader = new ConfigLoader($configPath);
+
+$pizzaGeneratorController = new PizzaGeneratorController($app["twig"], $configLoader);
 $pizzaMenuCardController = new PizzaMenuCardController($app["twig"]);
 $pizzaOrderController = new PizzaorderController($app["twig"]);
 $pizzaOrderProcessController = new PizzaOrderProcessController();

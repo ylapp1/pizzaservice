@@ -43,6 +43,23 @@ php pizzatool.php command [options] [arguments]
 
 Open your web browser and visit localhost:4567 to use the web interface.
 
+### Configuration
+
+* Copy "config/example-config.json" to "config/config.json"
+* Adjust the config file
+
+#### Available configurations
+| Config value | Description                          |
+| ------------ | ------------------------------------ |
+| randomPizza  | Configuration of the pizza generator |
+
+#### Random Pizza
+| Config value          | Description                             | Value structure                          | Notes                                              |
+| --------------------- | --------------------------------------- | ---------------------------------------- | -------------------------------------------------- |
+| defaultIngredients    | List of default ingredients             | { id: int, name: String, grams: int }    | The default ingredients must exist in the database |
+| ingredientsGramsRange | Min and max grams per random ingredient | { "minGrams": int, "maxGrams": int }     |                                                    |
+| pizzaPriceRange       | Min and max price in € per random pizza | { "minPrice": float, "maxPrice": float } |                                                    |
+| maxTotalWeight        | Max total weight in grams               | float                                    |                                                    |
 
 ## License
 
