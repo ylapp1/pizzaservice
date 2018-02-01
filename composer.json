@@ -11,6 +11,7 @@
     "scripts": {
 
         "post-install-cmd": [
+            "chmod +x vendor/propel/propel1/generator/bin/phing.php",
             "vendor/bin/propel-gen Propel om",
             "vendor/bin/propel-gen Propel sql",
             "vendor/bin/propel-gen Propel insert-sql",
