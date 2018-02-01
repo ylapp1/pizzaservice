@@ -135,8 +135,6 @@ class CreatePizzaCommand extends Command
      * @param String[] $_ingredientNames The ingredient names
      *
      * @return Pizza|bool The updated Pizza object or false
-     *
-     * @throws \PropelException
      */
     private function promptIngredients(InputInterface $_input, OutputInterface $_output, Pizza $_pizza, array $_ingredientNames)
     {

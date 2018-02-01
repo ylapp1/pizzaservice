@@ -49,15 +49,12 @@ class PizzaGenerator
      */
     public function generatePizza($_allowedIngredients, PizzaOrder $_pizzaOrder): Pizza
     {
-        // Generate pizza with unique ingredient combination (including amount of grams)
-        do
-        {
-            $pizza = new Pizza();
-            $this->addRandomIngredients($pizza, $_allowedIngredients);
+        $pizza = new Pizza();
+        $this->addRandomIngredients($pizza, $_allowedIngredients);
 
-            $pizzaExists = PizzaQuery::create()->filterByPizzaIngredient($pizza->getPizzaIngredients())
-                                               ->findOne();
-        } while($pizzaExists);
+        $existingPizza = $this->generatedPizzaExists($pizza, count($pizza->getPizzaIngredients()));
+        if ($existingPizza) return $existingPizza;
+
 
         // Generate unique pizza name
         do
@@ -71,6 +68,120 @@ class PizzaGenerator
         $pizza->setPrice($this->getRandomPrice());
 
         return $pizza;
+    }
+
+    /**
+     * Checks whether a generated pizza ingredient grams/type combination already exists in the current order or the database.
+     *
+     * @param Pizza $_pizza
+     * @param int $_amountIngredients
+     * @return bool|Pizza
+     * @throws \PropelException
+     */
+    private function generatedPizzaExists(Pizza $_pizza, int $_amountIngredients)
+    {
+        $existingPizza = $this->generatedPizzaExistsInDatabase($_pizza, $_amountIngredients);
+        if ($existingPizza) return $existingPizza;
+
+        $existingPizza = $this->generatedPizzaExistsInOrder($_pizza, $_amountIngredients);
+        if ($existingPizza) return $existingPizza;
+
+        return false;
+    }
+
+    /**
+     * Checks whether a generated pizza ingredient grams/type combination already exists in the database.
+     *
+     * @param Pizza $_generatedPizza The generated pizza
+     * @param int $_numberOfIngredients The number of ingredients that the generated pizza has
+     *
+     * @return Pizza|boolean The existing pizza or false
+     *
+     * @throws \PropelException
+     */
+    private function generatedPizzaExistsInDatabase(Pizza $_generatedPizza, int $_numberOfIngredients)
+    {
+        // Get generated pizzas with the same amount of ingredients
+        $existingPizzas = PizzaQuery::create()->joinpizzaIngredient()
+                                              ->filterByOrderCode("G*")
+                                              ->withColumn("COUNT(*)", "amount_ingredients")
+                                              ->groupBy("id")
+                                              ->having("amount_ingredients = " . $_numberOfIngredients)
+                                              ->find();
+
+        return $this->generatedPizzaExistsInList($_generatedPizza, $existingPizzas, $_numberOfIngredients);
+    }
+
+    /**
+     * Checks whether a generated pizza ingredient grams/type combination already exists in the current order.
+     *
+     * @param Pizza $_generatedPizza The generated pizza
+     * @param int $_numberOfIngredients The number of ingredients on the generated pizza
+     *
+     * @return bool|Pizza The existing pizza or false
+     *
+     * @throws \PropelException
+     */
+    private function generatedPizzaExistsInOrder(Pizza $_generatedPizza, int $_numberOfIngredients)
+    {
+        // Check whether a generated pizza in the order has the same ingredients combination like the generated one
+        $pizzaOrder = new PizzaOrder();
+        $pizzasWithSameNumberOfIngredients = array();
+
+        foreach ($pizzaOrder->getOrder() as $orderCode => $orderPizza)
+        {
+            // If order code starts with "G"
+            if (substr($orderCode, 0, 1) == "G")
+            {
+                if (count($orderPizza->getPizza()->getPizzaIngredients()) == $_numberOfIngredients)
+                {
+                    $pizzasWithSameNumberOfIngredients[] = $orderPizza->getPizza();
+                }
+            }
+        }
+
+        return $this->generatedPizzaExistsInList($_generatedPizza, $pizzasWithSameNumberOfIngredients, $_numberOfIngredients);
+    }
+
+    /**
+     * Checks whether a generated pizza ingredient grams/type combination already exists in a list of Pizza objects.
+     *
+     * @param Pizza $_generatedPizza The generated pizza
+     * @param Pizza[] $_pizzasWithSameNumberOfIngredients The list of pizzas with the same number of ingredients
+     * @param int $_numberOfIngredients The number of ingredients on the generated pizza
+     *
+     * @return Pizza|bool The existing pizza or false
+     *
+     * @throws \PropelException
+     */
+    private function generatedPizzaExistsInList(Pizza $_generatedPizza, $_pizzasWithSameNumberOfIngredients, int $_numberOfIngredients)
+    {
+        foreach ($_pizzasWithSameNumberOfIngredients as $pizzaWithSameNumberOfIngredients)
+        {
+            $numberOfMatchingIngredients = 0;
+            $counter = 0;
+
+            foreach ($pizzaWithSameNumberOfIngredients->getPizzaIngredients() as $pizzaIngredient)
+            {
+                $counter++;
+
+                foreach ($_generatedPizza->getPizzaIngredients() as $generatedPizzaIngredient)
+                {
+                    if ($pizzaIngredient->getIngredientId() == $generatedPizzaIngredient->getIngredientId() &&
+                        $pizzaIngredient->getGrams() == $generatedPizzaIngredient->getGrams())
+                    {
+                        $numberOfMatchingIngredients++;
+                        break;
+                    }
+                }
+
+                if ($numberOfMatchingIngredients != $counter) break;
+            }
+
+            if ($numberOfMatchingIngredients == $_numberOfIngredients) return $pizzaWithSameNumberOfIngredients;
+        }
+
+        return false;
     }
 
     /**
