@@ -8,6 +8,9 @@
 
 namespace PizzaService\Lib;
 
+use PizzaService\Propel\Models\IngredientTranslationQuery;
+use PizzaService\Propel\Models\PizzaIngredient;
+
 /**
  * Converts a list of pizza ingredients to a string.
  */
@@ -20,8 +23,6 @@ class IngredientListConverter
      * @param String $_separationString The string that will be printed between the ingredients
      *
      * @return String The list of ingredients as a string
-     *
-     * @throws \PropelException
      */
     public function pizzaIngredientsToString($_pizzaIngredients, String $_separationString): String
     {
@@ -30,14 +31,18 @@ class IngredientListConverter
 
         foreach ($_pizzaIngredients as $pizzaIngredient)
         {
-            if ($pizzaIngredient instanceOf \PizzaService\Propel\Models\PizzaIngredient)
+            if ($pizzaIngredient instanceOf PizzaIngredient)
             {
-                $ingredient = $pizzaIngredient->getIngredient();
+                $ingredientId = $pizzaIngredient->getIngredientId();
+                $ingredientName = IngredientTranslationQuery::create()->filterByIngredientId($ingredientId)
+                                                                      ->filterByLanguageCode("de")
+                                                                      ->findOne()
+                                                                      ->getIngredientName();
 
                 if ($isFirstEntry) $isFirstEntry = false;
                 else $ingredientsString .= $_separationString;
 
-                $ingredientsString .= $ingredient->getName() . " (" . $pizzaIngredient->getGrams() . "g)";
+                $ingredientsString .= $ingredientName . " (" . $pizzaIngredient->getGrams() . "g)";
             }
         }
 

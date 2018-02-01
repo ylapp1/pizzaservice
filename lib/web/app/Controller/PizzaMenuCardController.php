@@ -8,8 +8,10 @@
 
 namespace PizzaService\Lib\Web\App\Controller;
 
+use Criteria;
 use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverter;
-use PizzaService\Lib\Web\PizzaOrderSession\PizzaOrderHandler;
+use PizzaService\Lib\Web\PizzaOrder;
+use PizzaService\Propel\Models\OrderPizza;
 use PizzaService\Propel\Models\PizzaQuery;
 
 /**
@@ -20,11 +22,11 @@ class PizzaMenuCardController
     use PizzaListConverter;
 
     /**
-     * The pizza order handler.
+     * The pizza order.
      *
-     * @var PizzaOrderHandler $pizzaOrderHandler
+     * @var PizzaOrder $pizzaOrder
      */
-    private $pizzaOrderHandler;
+    private $pizzaOrder;
 
     /**
      * The template renderer
@@ -38,10 +40,12 @@ class PizzaMenuCardController
      * PizzaMenuCardController constructor.
      *
      * @param \Twig_Environment $_twig The template renderer
+     *
+     * @throws \PropelException
      */
     public function __construct(\Twig_Environment $_twig)
     {
-        $this->pizzaOrderHandler = new PizzaOrderHandler();
+        $this->pizzaOrder = new PizzaOrder();
         $this->twig = $_twig;
     }
 
@@ -58,12 +62,13 @@ class PizzaMenuCardController
      */
     public function showPizzaMenuCard(): String
     {
-        $pizzas = PizzaQuery::create()->orderByOrderCode()
+        $pizzas = PizzaQuery::create()->filterByOrderCode("G%", Criteria::NOT_LIKE)
+                                      ->orderByOrderCode()
                                       ->find();
 
         return $this->twig->render("pizzaMenuCard.twig",
             array(
-                "totalAmountPizzas" => $this->pizzaOrderHandler->getTotalAmountOrderPizzas(),
+                "totalAmountPizzas" => $this->pizzaOrder->getTotalAmountOrderPizzas(),
                 "pizzas" => $this->getTemplateArray($pizzas)
             )
         );
@@ -73,13 +78,23 @@ class PizzaMenuCardController
      * Adds an amount of pizzas to an order.
      *
      * @return String Error message or empty string
+     *
+     * @throws \PropelException
      */
     public function addPizzaToOrder(): String
     {
-        $pizzaId = (int)$_GET["pizza-id"];
+        $pizzaOrderCode = (int)$_GET["pizza-order-code"];
         $amount = (int)$_GET["amount"];
 
-        $error = $this->pizzaOrderHandler->changeAmountPizzas($pizzaId, $amount);
+        if ($amount < 0 || $amount > 50) return "Fehler: Die Anzahl je Pizza muss zwischen 1 und 50 liegen.";
+
+        $pizza = PizzaQuery::create()->findOneByOrderCode($pizzaOrderCode);
+
+        $orderPizza = new OrderPizza();
+        $orderPizza->setPizza($pizza)
+                   ->setAmount($amount);
+
+        $error = $this->pizzaOrder->addOrderPizza($orderPizza);
         if ($error) return $error;
         else return "";
     }

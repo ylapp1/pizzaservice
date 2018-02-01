@@ -1,0 +1,31 @@
+{
+  "randomPizza": {
+
+    "defaultIngredients": [
+      {
+        "id": 1,
+        "name": "Teig",
+        "grams": 100.0
+      },
+      {
+        "id": 2,
+        "name": "Tomatensauce",
+        "grams": 40.0
+      }
+    ],
+
+    "ingredientsGramsRange": {
+      "minGrams": 1,
+      "maxGrams": 200
+    },
+
+    "pizzaPriceRange": {
+      "minPrice": 5.0,
+      "maxPrice": 10.0
+    },
+
+    "maxTotalWeight": 400.0
+
+  }
+
+}

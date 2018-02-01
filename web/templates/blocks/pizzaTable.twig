@@ -4,48 +4,51 @@
  # @copyright 2017-2018 CN-Consult GmbH
  # @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  #}
+
 <table class="table table-hover pizza-table">
 
     <thead>
-    <tr>
-        <th>Bestellnummer</th>
-        <th>Pizza Name</th>
-        <th>Preis</th>
-        <th>Zutaten</th>
-        <th>{%block actionButtonColumnTitle %}{% endblock %}</th>
-    </tr>
+        <tr>
+            <th>Bestellnummer</th>
+            <th>Pizza Name</th>
+            <th>Preis</th>
+            <th>Zutaten</th>
+            <th>{% block actionButtonColumnTitle %}{% endblock %}</th>
+        </tr>
     </thead>
 
     <tbody>
 
-        {% for pizza in pizzas %}
-
-            <tr>
-                <td>{{ pizza.orderCode }}</td>
-                <td>{{ pizza.name }}</td>
-                <td>{{ pizza.price|number_format(2, ".", "") }} €</td>
-                <td>{{ pizza.pizzaIngredients|nl2br }}</td>
-                <td>
-                    <form class="form-inline pizza-action">
-                        <input type="number"
-                               class="form-control"
-                               name="amount"
-                               min="1"
-                               max="50"
-                               value="{{ pizza.amount }}"
-                               data-val="{{ pizza.amount }}">
-                        {% block actionButton %}{% endblock %}
-                    </form>
-                </td>
-            </tr>
-
-        {% endfor %}
-
         {% if pizzas|length == 0 %}
 
             <tr>
-                <td colspan="5" class="text-center">{% block pizzaListEmpty %}{% endblock %}</td>
+                <td colspan="5" class="alert alert-info text-center">{% block pizzaListEmpty %}{% endblock %}</td>
             </tr>
+
+        {% else %}
+
+            {% for pizza in pizzas %}
+
+                <tr>
+                    <td>{{ pizza.orderCode }}</td>
+                    <td>{{ pizza.name }}</td>
+                    <td>{{ pizza.price|number_format(2, ".", "") }} €</td>
+                    <td>{{ pizza.pizzaIngredients|nl2br }}</td>
+                    <td>
+                        <form class="form-inline pizza-action">
+                            <input type="number"
+                                   class="form-control"
+                                   name="amount"
+                                   min="1"
+                                   max="50"
+                                   value="{{ pizza.amount }}"
+                                   data-val="{{ pizza.amount }}">
+                            {% block actionButton %}{% endblock %}
+                        </form>
+                    </td>
+                </tr>
+
+            {% endfor %}
 
         {% endif %}
 

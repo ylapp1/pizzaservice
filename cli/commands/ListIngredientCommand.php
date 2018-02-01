@@ -8,8 +8,8 @@
 
 namespace PizzaService\Cli\Commands;
 
-use PizzaService\Propel\Models\Ingredient;
-use PizzaService\Propel\Models\IngredientQuery;
+use PizzaService\Propel\Models\IngredientTranslation;
+use PizzaService\Propel\Models\IngredientTranslationQuery;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,9 +39,10 @@ class ListIngredientCommand extends Command
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
-        /** @var Ingredient[] $ingredients */
-        $ingredients = IngredientQuery::create()->orderByName()
-                                                ->find();
+        /** @var IngredientTranslation[] $ingredients */
+        $ingredients = IngredientTranslationQuery::create()->filterByLanguageCode("de")
+                                                           ->orderByIngredientName()
+                                                           ->find();
 
         if (count($ingredients) == 0) $_output->writeln("\nThere are no ingredients yet\n");
         else
@@ -56,8 +57,8 @@ class ListIngredientCommand extends Command
             foreach ($ingredients as $ingredient)
             {
                 $row = array(
-                    $ingredient->getId(),
-                    $ingredient->getName()
+                    $ingredient->getIngredientId(),
+                    $ingredient->getIngredientName()
                 );
 
                 if ($isFirstRow) $isFirstRow = false;

@@ -17,13 +17,18 @@ use PizzaService\Propel\Models\Order;
 use PizzaService\Propel\Models\PizzaOrder;
 use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\Ingredient;
+use PizzaService\Propel\Models\IngredientTranslation;
 use PizzaService\Propel\Models\PizzaIngredient;
 
 // Adds one entry for each table
 $pizza = new Pizza();
 
+$ingredientName = new IngredientTranslation();
+$ingredientName->setLanguageCode("de");
+$ingredientName->setIngredientName("Teig");
+
 $ingredient = new Ingredient();
-$ingredient->setName("Teig");
+$ingredient->addIngredientTranslation($ingredientName);
 
 $ingredientDough = new PizzaIngredient();
 $ingredientDough->setGrams(1000)

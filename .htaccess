@@ -17,6 +17,7 @@
 
     ## Custom javascripts
     RewriteCond %{REQUEST_URI} !^/web/scripts/javascript.js
+    RewriteCond %{REQUEST_URI} !^/web/scripts/pizzaGenerator.js
     RewriteCond %{REQUEST_URI} !^/web/scripts/pizzaMenuCard.js
     RewriteCond %{REQUEST_URI} !^/web/scripts/pizzaOrder.js
 

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="pizza_service" defaultIdMethod="native" namespace="PizzaService\Propel\Models">
+
+    <!-- Customer Data -->
+    <table name="customers" phpName="Customer">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="customer_name_id" type="integer" required="true"/>
+        <column name="customer_address_id" type="integer" required="true"/>
+
+        <foreign-key foreignTable="customer_names" phpName="CustomerName" refPhpName="Customer">
+            <reference local="customer_name_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="customer_addresses" phpName="CustomerAddress" refPhpName="Customer">
+            <reference local="customer_address_id" foreign="id"/>
+        </foreign-key>
+
+        <!-- The combination of customer name and address must be unique -->
+        <unique>
+            <unique-column name="customer_name_id"/>
+            <unique-column name="customer_address_id"/>
+        </unique>
+    </table>
+
+
+
+    <!-- Customer Names -->
+    <table name="customer_names" phpName="CustomerName">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="first_name_id" type="integer" required="true"/>
+        <column name="last_name_id" type="integer" required="true"/>
+
+        <foreign-key foreignTable="first_names" phpName="FirstName" refPhpName="CustomerName">
+            <reference local="first_name_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="last_names" phpName="LastName" refPhpName="CustomerName">
+            <reference local="last_name_id" foreign="id"/>
+        </foreign-key>
+
+        <!-- The combination of first and last name must be unique -->
+        <unique>
+            <unique-column name="first_name_id"/>
+            <unique-column name="last_name_id"/>
+        </unique>
+    </table>
+
+    <table name="first_names" phpName="FirstName">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="255" required="true"/>
+
+        <unique>
+            <unique-column name="name"/>
+        </unique>
+    </table>
+
+    <table name="last_names" phpName="LastName">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="255" required="true"/>
+
+        <unique>
+            <unique-column name="name"/>
+        </unique>
+    </table>
+
+
+
+    <!-- Customer Addresses -->
+    <table name="customer_addresses" phpName="CustomerAddress">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="country_id" type="integer" required="true"/>
+        <column name="city_id" type="integer" required="true"/>
+        <column name="street_id" type="integer" required="true"/>
+
+        <foreign-key foreignTable="countries" phpName="Country" refPhpName="CustomerAddress">
+            <reference local="country_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="cities" phpName="City" refPhpName="CustomerAddress">
+            <reference local="city_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="streets" phpName="Street" refPhpName="CustomerAddress">
+            <reference local="street_id" foreign="id"/>
+        </foreign-key>
+
+        <!-- Each address may appear only once -->
+        <unique>
+            <unique-column name="country_id"/>
+            <unique-column name="city_id"/>
+            <unique-column name="street_id"/>
+        </unique>
+    </table>
+
+
+    <table name="countries" phpName="Country">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="255" required="true"/>
+
+        <!-- Each country name may appear only once -->
+        <unique>
+            <unique-column name="name"/>
+        </unique>
+    </table>
+
+    <table name="cities" phpName="City">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="zip_id" type="integer" required="true"/>
+        <column name="city_name_id" type="integer" required="true"/>
+
+        <foreign-key foreignTable="zips" phpName="Zip" refPhpName="City">
+            <reference local="zip_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="city_names" phpName="CityName" refPhpName="City">
+            <reference local="city_name_id" foreign="id"/>
+        </foreign-key>
+
+        <!-- The combination of zip and city name must be unique -->
+        <unique>
+            <unique-column name="zip_id"/>
+            <unique-column name="city_name_id"/>
+        </unique>
+    </table>
+
+
+    <!-- The zips are in their own table because it might be possible that multiple countries have the same zip for a city -->
+    <table name="zips" phpName="Zip">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="zip" type="varchar" size="255" required="true"/>
+
+        <!-- Each zip may appear only once -->
+        <unique>
+            <unique-column name="zip"/>
+        </unique>
+    </table>
+
+    <!-- The city names are in their own table because there are some cities that have the same name like other cities -->
+    <table name="city_names" phpName="CityName">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="255" required="true"/>
+
+        <!-- Each city name may appear only once -->
+        <unique>
+            <unique-column name="name"/>
+        </unique>
+    </table>
+
+
+    <table name="streets" phpName="Street">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="street_name_id" type="integer" required="true"/>
+        <column name="house_number_id" type="integer" required="true"/>
+
+        <foreign-key foreignTable="street_names" phpName="StreetName" refPhpName="Street">
+            <reference local="street_name_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="house_numbers" phpName="HouseNumber" refPhpName="Street">
+            <reference local="house_number_id" foreign="id"/>
+        </foreign-key>
+
+        <!-- Each house number may appear only once per street -->
+        <unique>
+            <unique-column name="street_name_id"/>
+            <unique-column name="house_number_id"/>
+        </unique>
+    </table>
+
+    <table name="street_names" phpName="StreetName">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="name" type="varchar" size="255" required="true"/>
+
+        <!-- Each street name may appear only once -->
+        <unique>
+            <unique-column name="name"/>
+        </unique>
+    </table>
+
+    <table name="house_numbers" phpName="HouseNumber">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <!-- The type of this column is varchar because house numbers may contain characters (e.g. 21a) -->
+        <column name="number" type="varchar" size="255" required="true"/>
+
+        <!-- Each house number may appear only once -->
+        <unique>
+            <unique-column name="number"/>
+        </unique>
+    </table>
+
+</database>

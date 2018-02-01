@@ -1,0 +1,75 @@
+{#
+# @file
+# @version 0.1
+# @copyright 2018 CN-Consult GmbH
+# @author Yannick Lapp <yannick.lapp@cn-consult.eu>
+#}
+{% extends "base.twig" %}
+
+{# Head #}
+{% block pageTitle %}Pizza Generator{% endblock %}
+{% block pageJavaScript %}pizzaGenerator.js{% endblock %}
+{% block basePath %}../../{% endblock %}
+
+{# Navigation bar#}
+{% set pizzaGeneratorActive = true %}
+
+{# Main content #}
+{% block content %}
+
+    {% if ingredients|length == 0 %}
+        <p class="alert alert-info">
+            Es sind noch keine Zutaten vorhanden. Pizzen können erst dann generiert werden wenn mindestens eine Zutat (außer den Standardzutaten) erstellt wurde.
+        </p>
+
+    {% else %}
+
+        <p>Wählen Sie die Zutaten, die auf der Pizza sein dürfen:</p>
+
+        <table class="table table-striped ingredient-table">
+
+            <tbody>
+
+                {% for row in ingredients|batch(2) %}
+
+                    <tr>
+                        {% for ingredient in row %}
+                            <td>
+                                <label for="{{ ingredient.ingredient.id }}">{{ ingredient.ingredientName }}</label>
+                            </td>
+                            <td>
+                                <label for="{{ ingredient.ingredient.id }}" class="table-label">
+                                    <input type="checkbox"
+                                    data-id="{{ ingredient.ingredient.id }}"
+                                    id="{{ ingredient.ingredient.id }}">
+                                </label>
+                            </td>
+                        {% endfor %}
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <button class="btn btn-primary generate-pizza-button">Neue Pizza generieren</button>
+
+        {% block pizzaData %}
+
+            {# Table of pizzas in the order list #}
+            {% embed "blocks/pizzaTable.twig" %}
+
+                {% block actionButtonColumnTitle %}Bestellung{% endblock %}
+                {% block actionButton %}
+                    <button type="button" class="btn btn-primary" data-pizza-id="{{ pizza.id }}">Bestellen</button>
+                {% endblock %}
+                {% block pizzaListEmpty %}Noch keine Pizza generiert{% endblock %}
+
+            {% endembed %}
+
+        {% endblock %}
+
+    {% endif %}
+
+{% endblock %}

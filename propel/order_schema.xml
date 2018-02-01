@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database name="pizza_service" defaultIdMethod="native" namespace="PizzaService\Propel\Models">
+
+    <table name="orders" phpName="Order">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="customer_id" type="integer" required="true"/>
+        <column name="completed_at" type="timestamp" required="false"/>
+
+        <foreign-key foreignTable="customers" phpName="Customer" refPhpName="Order">
+            <reference local="customer_id" foreign="id"/>
+        </foreign-key>
+
+        <!-- Automatically creates a created_at and a updated_at column when entries are added/updated -->
+        <behavior name="timestampable"/>
+
+    </table>
+
+    <table name="order_pizzas" phpName="OrderPizza" isCrossRef="true">
+        <column name="id" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+        <column name="pizza_id" type="integer" required="true"/>
+        <column name="order_id" type="integer" required="true"/>
+        <column name="amount" type="smallint" required="true"/>
+
+        <foreign-key foreignTable="orders" phpName="Order" refPhpName="OrderPizza" onDelete="CASCADE">
+            <reference local="order_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="pizzas" phpName="Pizza" refPhpName="OrderPizza" onDelete="RESTRICT">
+            <reference local="pizza_id" foreign="id"/>
+        </foreign-key>
+    </table>
+
+</database>

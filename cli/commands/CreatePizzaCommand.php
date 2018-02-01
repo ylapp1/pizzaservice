@@ -8,7 +8,7 @@
 
 namespace PizzaService\Cli\Commands;
 
-use PizzaService\Propel\Models\IngredientQuery;
+use PizzaService\Propel\Models\IngredientTranslationQuery;
 use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\PizzaIngredient;
 use PizzaService\Propel\Models\PizzaQuery;
@@ -45,9 +45,10 @@ class CreatePizzaCommand extends Command
      */
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
-        $ingredientNames = (array)IngredientQuery::create()->select(array("name"))
-                                                           ->orderByName()
-                                                           ->find();
+        $ingredientNames = (array)IngredientTranslationQuery::create()->filterByLanguageCode("de")
+                                                                      ->orderByIngredientName()
+                                                                      ->select(array("ingredient_name"))
+                                                                      ->find();
 
         if (! $ingredientNames)
         {
@@ -134,8 +135,6 @@ class CreatePizzaCommand extends Command
      * @param String[] $_ingredientNames The ingredient names
      *
      * @return Pizza|bool The updated Pizza object or false
-     *
-     * @throws \PropelException
      */
     private function promptIngredients(InputInterface $_input, OutputInterface $_output, Pizza $_pizza, array $_ingredientNames)
     {
@@ -160,7 +159,8 @@ class CreatePizzaCommand extends Command
 
         foreach ($selectedIngredients as $selectedIngredient)
         {
-            $ingredient = IngredientQuery::create()->findOneByName($selectedIngredient);
+            $ingredientId = IngredientTranslationQuery::create()->findOneByIngredientName($selectedIngredient)
+                                                                ->getIngredientId();
             $amountGrams = 0;
 
             while (! $amountGrams)
@@ -174,7 +174,7 @@ class CreatePizzaCommand extends Command
 
             $pizzaIngredient = new PizzaIngredient();
             $pizzaIngredient->setGrams($amountGrams)
-                            ->setIngredient($ingredient);
+                            ->setIngredientId($ingredientId);
             $_pizza->addPizzaIngredient($pizzaIngredient);
         }
 

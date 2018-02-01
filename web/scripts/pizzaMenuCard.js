@@ -14,21 +14,7 @@ $(document).ready(function(){
 
         amount = Number(amount);
 
-        // Add pizza to order list
-        $.ajax({url: "web/addpizzatoorder.php?pizza-id=" + button.data("pizza-id") + "&amount=" + amount,
-            type: "get",
-            dataType: "text",
-            success: function(_error){
-
-                if (_error !== "") showErrorMessage(_error);
-                else
-                {
-                    // Update the pizza counter
-                    setPizzaCount(getPizzaCount() + amount);
-                    showSuccessMessage(amount + "x \"" + button.parents().eq(2).find("td:nth-child(2)").text() + "\" erfolgreich zur Bestellung hinzugefügt!");
-                }
-            }
-        });
+        addPizzaToOrder(button.data("pizza-order-code"), button.parents().eq(2).find("td:nth-child(2)").text(), amount);
 
     });
 

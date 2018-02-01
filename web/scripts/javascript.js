@@ -88,3 +88,29 @@ function setPizzaCount(_amountPizzas)
 {
     pizzaCounter.text(_amountPizzas);
 }
+
+/**
+ * Adds a pizza to the order.
+ *
+ * @param _pizzaOrderCode int The id of the pizza
+ * @param _pizzaName String The name of the pizza
+ * @param _amount int The amount of pizzas
+ */
+function addPizzaToOrder(_pizzaOrderCode, _pizzaName, _amount)
+{
+    // Add pizza to order list
+    $.ajax({url: "web/addpizzatoorder.php?pizza-order-code=" + _pizzaOrderCode + "&amount=" + _amount,
+        type: "get",
+        dataType: "text",
+        success: function(_error){
+
+            if (_error !== "") showErrorMessage(_error);
+            else
+            {
+                // Update the pizza counter
+                setPizzaCount(getPizzaCount() + _amount);
+                showSuccessMessage(_amount + "x \"" + _pizzaName + "\" erfolgreich zur Bestellung hinzugefügt!");
+            }
+        }
+    });
+}

@@ -107,4 +107,4 @@ sed -i "/;date.timezone =/c date.timezone = \"Europe/Berlin\"" /etc/php/7.0/cli/
 service apache2 restart
 
 # Fixes the bug that backspace prints a character in a CMD vagrant ssh session
-echo "stty sane" >> /home/ubuntu/.bashrc
+echo "stty sane" >> /home/vagrant/.bashrc

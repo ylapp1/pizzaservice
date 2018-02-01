@@ -8,12 +8,14 @@
 
 namespace PizzaService\Cli\Commands;
 
+use Criteria;
 use PizzaService\Lib\IngredientListConverter;
 use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\PizzaQuery;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command;
 
@@ -29,7 +31,9 @@ class ListPizzaCommand extends Command
     {
         $this->setName("list:pizza")
              ->setDescription("Shows a list of all pizzas.")
-             ->setHelp("This command shows a complete list of all pizzas that are currently stored in the database.");
+             ->setHelp("This command shows a complete list of all pizzas that are currently stored in the database.")
+
+             ->addOption("include-generated", "a", InputOption::VALUE_NONE, "Shows all pizzas including generated ones");
     }
 
     /**
@@ -43,8 +47,15 @@ class ListPizzaCommand extends Command
     protected function execute(InputInterface $_input, OutputInterface $_output)
     {
         /** @var Pizza[] $pizzas */
-        $pizzas = PizzaQuery::create()->orderByOrderCode()
-                                      ->find();
+        $pizzaQuery = PizzaQuery::create();
+
+        if (! $_input->getOption("include-generated"))
+        {
+            $pizzaQuery->filterByOrderCode("G%", Criteria::NOT_LIKE);
+        }
+
+        $pizzas = $pizzaQuery->orderByOrderCode()
+                             ->find();
 
         if (count($pizzas) == 0) $_output->writeln("\nThere are no pizzas yet\n");
         else
