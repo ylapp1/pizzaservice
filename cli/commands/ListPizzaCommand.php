@@ -33,7 +33,7 @@ class ListPizzaCommand extends Command
              ->setDescription("Shows a list of all pizzas.")
              ->setHelp("This command shows a complete list of all pizzas that are currently stored in the database.")
 
-            ->addOption("include-generated", "a", InputOption::VALUE_NONE, "Shows all pizzas including generated ones");
+             ->addOption("include-generated", "a", InputOption::VALUE_NONE, "Shows all pizzas including generated ones");
     }
 
     /**

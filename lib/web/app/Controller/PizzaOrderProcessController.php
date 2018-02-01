@@ -340,6 +340,39 @@ class PizzaOrderProcessController
                     $pizza = PizzaQuery::create()->findOneById($pizzaId);
                     if (! $pizza) return "Fehler: Ungültige Pizza ID in der Bestellung";
                 }
+                else
+                { // If the pizza has no ID it will be saved to the database with this order
+
+                    $orderedPizza = $orderPizza->getPizza();
+
+                    /*
+                     * Check whether a pizza with the name, order code or ingredients/grams combination already exists in the database
+                     * This is necessary because some one else could have generated a pizza with the same order code for example before
+                     * the current user saved the order.
+                     */
+
+                    // Check name
+                    $pizza = PizzaQuery::create()->findOneByName($orderedPizza->getName());
+                    if ($pizza) return "Fehler: Eine Pizza mit dem Namen " . $orderedPizza->getName() . " existiert bereits in der Datenbank.";
+
+                    // Check order code
+                    $pizza = PizzaQuery::create()->findOneByOrderCode($orderedPizza->getOrderCode());
+                    if ($pizza) return "Fehler: Eine Pizza mit der Bestellnummer " . $orderedPizza->getOrderCode() . " existiert bereits in der Datenbank";
+
+                    // Check ingredients/grams combination
+                    $pizzaQuery = PizzaQuery::create();
+
+                    foreach ($orderedPizza->getPizzaIngredients() as $pizzaIngredient)
+                    {
+                        $pizzaQuery->usePizzaIngredientQuery()
+                                       ->filterByIngredientId($pizzaIngredient->getIngredientId())
+                                       ->filterByGrams($pizzaIngredient->getGrams())
+                                   ->endUse();
+                    }
+
+                    $pizza = $pizzaQuery->findOne();
+                    if ($pizza) return "Fehler: Eine Pizza mit dieser Zutaten/Menge Kombination existiert bereits in der Datenbank";
+                }
             }
         }
 
