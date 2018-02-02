@@ -70,9 +70,9 @@ $(document).ready(function(){
         var input = $(this);
         var deleteLink = input.parent().find("a").attr("href");
 
-        var pizzaId = deleteLink.match(/.*delete=([0-9]).*/)[1];
+        var pizzaOrderCode = deleteLink.match(/.*delete=(G?[0-9]).*/)[1];
 
-        $.ajax({url: "web/order/changeamount.php?pizza-id=" + pizzaId + "&amount=" + input.val(),
+        $.ajax({url: "web/order/changeamount.php?pizza-order-code=" + pizzaOrderCode + "&amount=" + input.val(),
             type: "get",
             dataType: "text",
             success: function(_error)

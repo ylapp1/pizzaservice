@@ -80,16 +80,18 @@ class PizzaOrderController
      */
     public function changeAmount(): String
     {
-        $pizzaId = (int)$_GET["pizza-id"];
+        $orderCode = $_GET["pizza-order-code"];
         $amount = (int)$_GET["amount"];
 
-        $difference = $amount - $this->pizzaOrder->getAmountOrderPizzasById($pizzaId);
+        $currentOrderPizza = $this->pizzaOrder->getOrderPizza($orderCode);
 
-        $orderPizza = new OrderPizza();
-        $orderPizza->setPizzaId($pizzaId)
-                   ->setAmount($difference);
+        $difference = $amount - $currentOrderPizza->getAmount();
 
-        $error = $this->pizzaOrder->changeAmountOrderPizzas($orderPizza);
+        $newOrderPizza = new OrderPizza();
+        $newOrderPizza->setPizza($currentOrderPizza->getPizza())
+                      ->setAmount($difference);
+
+        $error = $this->pizzaOrder->changeAmountOrderPizzas($newOrderPizza);
         if ($error) return $error;
         else return "";
     }

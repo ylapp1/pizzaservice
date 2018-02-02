@@ -121,25 +121,6 @@ class PizzaOrder
     // Get information about the order
 
     /**
-     * Returns the amount of pizzas in the order by id.
-     *
-     * @param int $_pizzaId The pizza id
-     *
-     * @return int The amount of order pizzas with that id
-     *
-     * @throws \PropelException
-     */
-    public function getAmountOrderPizzasById(int $_pizzaId)
-    {
-        foreach ($this->orderPizzas as $orderPizza)
-        {
-            if ($orderPizza->getPizza()->getId() == $_pizzaId) return $orderPizza->getAmount();
-        }
-
-        return 0;
-    }
-
-    /**
      * Returns the order array.
      *
      * @return OrderPizza[] The order array
