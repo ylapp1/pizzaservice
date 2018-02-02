@@ -43,10 +43,7 @@ class IngredientListConverter
         }
 
         // Sort the ingredients by names
-        usort($ingredientStrings,
-            function(String $_stringA, String $_stringB) {
-                return strcmp($_stringA, $_stringB);
-        });
+        natsort($ingredientStrings);
 
         return implode($_separationString, $ingredientStrings);
     }
