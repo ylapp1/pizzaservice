@@ -8,6 +8,7 @@
 
 namespace PizzaService\Lib\PizzaGenerator;
 
+use PizzaService\Propel\Models\IngredientTranslation;
 use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\PizzaIngredient;
 use PizzaService\Propel\Models\IngredientTranslationQuery;
@@ -129,61 +130,58 @@ class PizzaNameGenerator
      *
      * @param PizzaIngredient[] $_pizzaIngredients The pizza ingredients
      *
-     * @return String The random ingredient name
-     *
-     * @throws \PropelException
+     * @return IngredientTranslation|bool The random ingredient translation or false
      */
-    private function getRandomIngredientName($_pizzaIngredients): String
+    private function getRandomIngredientTranslation($_pizzaIngredients): IngredientTranslation
     {
         $counter = 0;
         $randomIndex = rand(0, count($_pizzaIngredients) - 1);
-        $ingredientName = "";
 
         foreach ($_pizzaIngredients as $pizzaIngredient)
         {
             if ($counter == $randomIndex)
             {
-                $ingredient = $pizzaIngredient->getIngredient();
-                $ingredientName = IngredientTranslationQuery::create()->filterByIngredient($ingredient)
-                                                                      ->filterByLanguageCode("it")
-                                                                      ->findOne()
-                                                                      ->getIngredientName();
+                $ingredientId = $pizzaIngredient->getIngredientId();
+                $ingredientTranslation = IngredientTranslationQuery::create()->filterByIngredientId($ingredientId)
+                                                                             ->filterByLanguageCode("it")
+                                                                             ->findOne();
 
-                break;
+                return $ingredientTranslation;
             }
 
             $counter++;
         }
 
-        return $ingredientName;
+        return false;
     }
 
     /**
      * Generates a random pizza name from the list of pizza ingredients.
      *
      * @param Pizza $_pizza The pizza object with pizza ingredients already added to it
+     * @param array $_defaultIngredientsIds The ids of the default ingredients
      *
      * @return String The random pizza name
      *
      * @throws \PropelException
      */
-    public function generatePizzaName(Pizza $_pizza)
+    public function generatePizzaName(Pizza $_pizza, array $_defaultIngredientsIds)
     {
         $pizzaIngredients = $_pizza->getPizzaIngredients();
-        $ingredientName = "Pasta";
 
-        if (count($pizzaIngredients) > 1)
-        { // When the pizza contains more ingredients than dough force the use of any ingredient except for "Pasta"
+        if (count($pizzaIngredients) > count($_defaultIngredientsIds))
+        { // When the pizza contains more ingredients than the default ones force the use of any ingredient that is not a default ingredient
 
-            while ($ingredientName == "Pasta")
+            do
             {
-                $ingredientName = $this->getRandomIngredientName($pizzaIngredients);
-            }
+                $ingredientTranslation = $this->getRandomIngredientTranslation($pizzaIngredients);
+            } while(in_array($ingredientTranslation->getIngredientId(), $_defaultIngredientsIds));
         }
+        else $ingredientTranslation = $this->getRandomIngredientTranslation($pizzaIngredients);
 
         $pizzaName = $this->getRandomItalianCityName() . " " .
                      $this->getRandomItalianLinkingWord() . " " .
-                     $ingredientName . " " .
+                     $ingredientTranslation->getIngredientName() . " " .
                      $this->getRandomItalianAdjective();
 
         return $pizzaName;

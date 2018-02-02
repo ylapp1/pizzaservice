@@ -114,11 +114,15 @@ class PizzaGenerator
 
         } while ($this->generatedPizzaExistsInDatabase($pizza, count($pizza->getPizzaIngredients()),false));
 
+        $defaultPizzaIngredientsIds = array_map(function($data){
+            return $data["id"];
+        }, $this->defaultPizzaIngredientsData);
+
 
         // Generate unique pizza name
         do
         {
-            $pizzaName = $this->pizzaNameGenerator->generatePizzaName($pizza);
+            $pizzaName = $this->pizzaNameGenerator->generatePizzaName($pizza, $defaultPizzaIngredientsIds);
             $pizzaExists = PizzaQuery::create()->findOneByName($pizzaName);
         } while($pizzaExists);
 
