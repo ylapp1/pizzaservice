@@ -8,13 +8,14 @@
 
 namespace PizzaService\Lib\Web;
 use PizzaService\Propel\Models\Pizza;
-use PizzaService\Propel\Models\PizzaIngredient;
 
 /**
  * Saves and loads one random pizza from the session.
  */
 class RandomPizza
 {
+    use PizzaConverterTrait;
+
     /**
      * The random pizza
      *
@@ -73,52 +74,6 @@ class RandomPizza
         {
             $this->randomPizza = $this->pizzaFromArray($_SESSION[$this->randomPizzaSessionIndex]);
         }
-    }
-
-    /**
-     * Converts a pizza and its ingredients to an array.
-     *
-     * @param Pizza $_pizza The order pizza
-     *
-     * @return array The pizza as an array
-     *
-     * @throws \PropelException
-     */
-    private function pizzaToArray(Pizza $_pizza): array
-    {
-        $pizzaIngredients = array();
-
-        foreach ($_pizza->getPizzaIngredients() as $pizzaIngredient)
-        {
-            $pizzaIngredients[] = $pizzaIngredient->toJSON(true);
-        }
-
-        return array(
-            "Pizza" => $_pizza->toJSON(true),
-            "PizzaIngredients" => $pizzaIngredients
-        );
-    }
-
-    /**
-     * Creates a pizza object from an array of pizza data.
-     *
-     * @param array $_pizzaArray The pizza data
-     *
-     * @return Pizza The Pizza object
-     */
-    private function pizzaFromArray(array $_pizzaArray): Pizza
-    {
-        $pizza = new Pizza();
-        $pizza->fromJSON($_pizzaArray["Pizza"]);
-
-        foreach ($_pizzaArray["PizzaIngredients"] as $pizzaIngredientJSON)
-        {
-            $pizzaIngredient = new PizzaIngredient();
-            $pizzaIngredient->fromJSON($pizzaIngredientJSON);
-            $pizza->addPizzaIngredient($pizzaIngredient);
-        }
-
-        return $pizza;
     }
 
     /**

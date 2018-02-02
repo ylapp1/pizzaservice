@@ -10,7 +10,6 @@ namespace PizzaService\Lib\Web;
 
 use PizzaService\Propel\Models\OrderPizza;
 use PizzaService\Propel\Models\Pizza;
-use PizzaService\Propel\Models\PizzaIngredient;
 use PizzaService\Propel\Models\PizzaQuery;
 
 /**
@@ -18,6 +17,8 @@ use PizzaService\Propel\Models\PizzaQuery;
  */
 class PizzaOrder
 {
+    use PizzaConverterTrait;
+
     /**
      * The list of order Pizzas
      *
@@ -114,54 +115,6 @@ class PizzaOrder
 
             $this->orderPizzas[$pizzaOrderCode] = $orderPizza;
         }
-    }
-
-    /**
-     * Converts a pizza and its ingredients to an array.
-     *
-     * @param OrderPizza $_orderPizza The order pizza
-     *
-     * @return array The pizza as an array
-     *
-     * @throws \PropelException
-     */
-    private function pizzaToArray(OrderPizza $_orderPizza): array
-    {
-        $pizzaIngredients = array();
-
-        $pizza = $_orderPizza->getPizza();
-        foreach ($pizza->getPizzaIngredients() as $pizzaIngredient)
-        {
-            $pizzaIngredients[] = $pizzaIngredient->toJSON(true);
-        }
-
-        return array(
-            "Pizza" => $pizza->toJSON(true),
-            "PizzaIngredients" => $pizzaIngredients,
-            "Amount" => $_orderPizza->getAmount()
-        );
-    }
-
-    /**
-     * Creates a pizza object from an array of pizza data.
-     *
-     * @param array $_pizzaArray The pizza data
-     *
-     * @return Pizza The Pizza object
-     */
-    private function pizzaFromArray(array $_pizzaArray): Pizza
-    {
-        $pizza = new Pizza();
-        $pizza->fromJSON($_pizzaArray["Pizza"]);
-
-        foreach ($_pizzaArray["PizzaIngredients"] as $pizzaIngredientJSON)
-        {
-            $pizzaIngredient = new PizzaIngredient();
-            $pizzaIngredient->fromJSON($pizzaIngredientJSON);
-            $pizza->addPizzaIngredient($pizzaIngredient);
-        }
-
-        return $pizza;
     }
 
 

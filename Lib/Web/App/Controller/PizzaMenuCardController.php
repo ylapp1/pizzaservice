@@ -9,7 +9,7 @@
 namespace PizzaService\Lib\Web\App\Controller;
 
 use Criteria;
-use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverter;
+use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverterTrait;
 use PizzaService\Lib\Web\PizzaOrder;
 use PizzaService\Propel\Models\OrderPizza;
 use PizzaService\Propel\Models\PizzaQuery;
@@ -19,7 +19,7 @@ use PizzaService\Propel\Models\PizzaQuery;
  */
 class PizzaMenuCardController
 {
-    use PizzaListConverter;
+    use PizzaListConverterTrait;
 
     /**
      * The pizza order.

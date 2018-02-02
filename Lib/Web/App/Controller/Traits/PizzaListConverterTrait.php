@@ -16,7 +16,7 @@ use PizzaService\Propel\Models\PizzaIngredientQuery;
 /**
  * Converts a Propel Collection of Pizza Objects to an array that can be used to fill the twig templates.
  */
-trait PizzaListConverter
+trait PizzaListConverterTrait
 {
     /**
      * Generates and returns an array of pizza data for the twig templates.
