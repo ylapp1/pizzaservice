@@ -26,8 +26,7 @@ class IngredientListConverter
      */
     public function pizzaIngredientsToString($_pizzaIngredients, String $_separationString): String
     {
-        $ingredientsString = "";
-        $isFirstEntry = true;
+        $ingredientStrings = array();
 
         foreach ($_pizzaIngredients as $pizzaIngredient)
         {
@@ -39,13 +38,16 @@ class IngredientListConverter
                                                                       ->findOne()
                                                                       ->getIngredientName();
 
-                if ($isFirstEntry) $isFirstEntry = false;
-                else $ingredientsString .= $_separationString;
-
-                $ingredientsString .= $ingredientName . " (" . $pizzaIngredient->getGrams() . "g)";
+                $ingredientStrings[] = $ingredientName . " (" . $pizzaIngredient->getGrams() . "g)";
             }
         }
 
-        return $ingredientsString;
+        // Sort the ingredients by names
+        usort($ingredientStrings,
+            function(String $_stringA, String $_stringB) {
+                return strcmp($_stringA, $_stringB);
+        });
+
+        return implode($_separationString, $ingredientStrings);
     }
 }
