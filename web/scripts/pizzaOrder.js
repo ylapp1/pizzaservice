@@ -5,12 +5,14 @@
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
+var orderButton;
 var pizzaTableBody;
 var resetOrderButton;
 var totalPrice;
 
 $(document).ready(function(){
 
+    orderButton = $(".order-button");
     pizzaTableBody = $(".pizza-table tbody");
     resetOrderButton = $(".reset-order-button");
     totalPrice = $(".totalPrice span");
@@ -18,88 +20,20 @@ $(document).ready(function(){
     // Event handler for the order button
     $(".address-input-field button").on("click", function(){
 
-        var urlString = "web/order/process?";
-        var isFirstEntry = true;
+        var addressInputs = $(this).parents().eq(2).find("input");
 
-        $(this).parent().parent().find("input").each(function(index, input){
+        var orderProcessUrl = getOrderProcessUrl(addressInputs);
+        if (! orderProcessUrl) return;
 
-            if (isFirstEntry) isFirstEntry = false;
-            else urlString += "&";
-
-            var inputValue = $(input).val();
-
-            if (inputValue === "")
-            {
-                showErrorMessage("Bitte alle Felder ausfüllen!");
-                urlString = false;
-                return;
-            }
-
-            urlString += $(input).attr("name") + "=\"" + inputValue + "\"";
-
-        });
-
-        if (! urlString) return;
-
-        // Add pizza to order list
-        $.ajax({url: urlString,
-            type: "get",
-            dataType: "text",
-            success: function(_text){
-
-                if (_text.indexOf("Fehler") === -1)
-                {
-                    showSuccessMessage("<strong>Vielen Dank!</strong> Die Bestellung wurde entgegengenommen!");
-                    resetOrder();
-                }
-                else showErrorMessage(_text.replace("Fehler: ", ""));
-            },
-            error: function(xhr, status, error) {
-                showErrorMessage("An AJAX error occured: " + status + ": " + error);
-            }
-        });
+        processOrder(orderProcessUrl);
 
         // Prevent the form from being submitted by HTML
         return false;
 
     });
 
-
     pizzaTableBody.find("input").on("change", function(){
-
-        var input = $(this);
-        var deleteLink = input.parent().find("a").attr("href");
-
-        var pizzaOrderCode = deleteLink.match(/.*delete=(G?[0-9]).*/)[1];
-
-        $.ajax({url: "web/order/changeamount.php?pizza-order-code=" + pizzaOrderCode + "&amount=" + input.val(),
-            type: "get",
-            dataType: "text",
-            success: function(_error)
-            {
-                var previousValue = Number(input.data('val'));
-
-                if (_error !== "")
-                {
-                    showErrorMessage(_error);
-                    input.val(previousValue);
-                }
-                else
-                {
-                    hideMessage();
-                    var currentValue = Number(input.val());
-                    var difference = currentValue - previousValue;
-
-                    // Update the pizza counter
-                    setPizzaCount(getPizzaCount() + difference);
-
-                    var price = parseFloat(input.parents().eq(2).find("td:nth-child(3)").text());
-                    setTotalPrice(getTotalPrice() + (difference * price));
-
-                    input.data("val", currentValue);
-                }
-            }
-        });
+        changeAmountOrderPizzas($(this));
     });
 
     resetOrderButton.on("click", function(){
@@ -109,12 +43,7 @@ $(document).ready(function(){
             dataType: "text",
             success: function(_error)
             {
-                if (_error === "")
-                {
-                    showSuccessMessage("Bestellung zurückgesetzt");
-                    resetOrder();
-                }
-
+                if (_error === "") resetOrder();
             }
         })
 
@@ -142,11 +71,115 @@ function setTotalPrice(_totalPrice)
     totalPrice.text(_totalPrice.toFixed(2));
 }
 
+/**
+ * Clears the current order.
+ */
 function resetOrder()
 {
     pizzaTableBody.find("tr").remove();
     pizzaTableBody.append("<tr><td colspan=\"6\" class=\"text-center alert alert-info\">Die Bestellung ist leer</td></tr>");
     setPizzaCount(0);
     setTotalPrice(0);
+    orderButton.prop("disabled", true);
     resetOrderButton.prop("disabled", true);
+    showSuccessMessage("Bestellung zurückgesetzt");
+}
+
+/**
+ * Returns the url string for order processing.
+ *
+ * @param _addressInputs
+ *
+ * @return {String|Boolean} The url string or false
+ */
+function getOrderProcessUrl(_addressInputs)
+{
+    var urlString = "web/order/process?";
+    var isFirstEntry = true;
+
+    _addressInputs.each(function(index, input){
+
+        if (isFirstEntry) isFirstEntry = false;
+        else urlString += "&";
+
+        var inputValue = $(input).val();
+
+        if (inputValue === "")
+        {
+            showErrorMessage("Bitte alle Felder ausfüllen!");
+            return false;
+        }
+
+        urlString += $(input).attr("name") + "=\"" + inputValue + "\"";
+
+    });
+
+    return urlString;
+}
+
+/**
+ * Tries to process the order by sending the customer address data to the php.
+ *
+ * @param {String} _orderProcessUrl
+ */
+function processOrder(_orderProcessUrl)
+{
+    // Add pizza to order list
+    $.ajax({url: _orderProcessUrl,
+        type: "get",
+        dataType: "text",
+        success: function(_text){
+
+            if (_text.indexOf("Fehler") === -1)
+            {
+                showSuccessMessage("<strong>Vielen Dank!</strong> Die Bestellung wurde entgegengenommen!");
+                resetOrder();
+            }
+            else showErrorMessage(_text.replace("Fehler: ", ""));
+        },
+        error: function(xhr, status, error) {
+            showErrorMessage("An AJAX error occured: " + status + ": " + error);
+        }
+    });
+}
+
+/**
+ * Changes the amount of order pizzas for a single pizza.
+ *
+ * @param _amountInput The input element that triggered the amount change
+ */
+function changeAmountOrderPizzas(_amountInput)
+{
+    var deleteLink = _amountInput.parent().find("a").attr("href");
+
+    var pizzaOrderCode = deleteLink.match(/.*delete=(G?[0-9]).*/)[1];
+
+    $.ajax({url: "web/order/changeamount.php?pizza-order-code=" + pizzaOrderCode + "&amount=" + _amountInput.val(),
+        type: "get",
+        dataType: "text",
+        success: function(_error)
+        {
+            var previousValue = Number(_amountInput.data('val'));
+
+            if (_error !== "")
+            {
+                showErrorMessage(_error);
+                _amountInput.val(previousValue);
+            }
+            else
+            {
+                hideMessage();
+                var currentValue = Number(_amountInput.val());
+                var difference = currentValue - previousValue;
+
+                // Update the pizza counter
+                setPizzaCount(getPizzaCount() + difference);
+
+                var price = parseFloat(_amountInput.parents().eq(2).find("td:nth-child(3)").text());
+                setTotalPrice(getTotalPrice() + (difference * price));
+
+                _amountInput.data("val", currentValue);
+            }
+        }
+    });
 }
