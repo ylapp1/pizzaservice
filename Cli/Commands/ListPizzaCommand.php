@@ -10,6 +10,7 @@ namespace PizzaService\Cli\Commands;
 
 use Criteria;
 use PizzaService\Lib\IngredientListConverter;
+use PizzaService\Lib\PizzaListConverterTrait;
 use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\PizzaQuery;
 use Symfony\Component\Console\Helper\Table;
@@ -24,6 +25,8 @@ use Symfony\Component\Console\Command\Command;
  */
 class ListPizzaCommand extends Command
 {
+    use PizzaListConverterTrait;
+
     /**
      * Configures the command properties (name, description, help text).
      */
@@ -60,7 +63,8 @@ class ListPizzaCommand extends Command
         if (count($pizzas) == 0) $_output->writeln("\nThere are no pizzas yet\n");
         else
         {
-            $ingredientListConverter = new IngredientListConverter();
+            $pizzaDataArrays = $this->getTemplateArray($pizzas);
+
             $_output->writeln("\nThe available pizzas are:\n");
 
             $table = new Table($_output);
@@ -68,13 +72,13 @@ class ListPizzaCommand extends Command
 
             $isFirstRow = true;
 
-            foreach ($pizzas as $pizza)
+            foreach ($pizzaDataArrays as $pizzaDataArray)
             {
                 $row = array(
-                    $pizza->getOrderCode(),
-                    $pizza->getName(),
-                    number_format($pizza->getPrice(), 2) . " €",
-                    $ingredientListConverter->pizzaIngredientsToString($pizza->getPizzaIngredients(), "\n")
+                    $pizzaDataArray["orderCode"],
+                    $pizzaDataArray["name"],
+                    number_format($pizzaDataArray["price"], 2) . " €",
+                    $pizzaDataArray["pizzaIngredients"]
                 );
 
                 if ($isFirstRow) $isFirstRow = false;

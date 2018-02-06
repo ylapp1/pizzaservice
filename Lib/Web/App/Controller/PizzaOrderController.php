@@ -8,7 +8,7 @@
 
 namespace PizzaService\Lib\Web\App\Controller;
 
-use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverterTrait;
+use PizzaService\Lib\PizzaListConverterTrait;
 use PizzaService\Lib\Web\PizzaOrder;
 use PizzaService\Propel\Models\OrderPizza;
 

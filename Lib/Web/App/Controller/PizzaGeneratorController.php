@@ -11,7 +11,7 @@ namespace PizzaService\Lib\Web\App\Controller;
 use Criteria;
 use PizzaService\Lib\ConfigLoader;
 use PizzaService\Lib\PizzaGenerator\PizzaGenerator;
-use PizzaService\Lib\Web\App\Controller\Traits\PizzaListConverterTrait;
+use PizzaService\Lib\PizzaListConverterTrait;
 use PizzaService\Lib\Web\PizzaOrder;
 use PizzaService\Lib\Web\RandomPizza;
 use PizzaService\Propel\Models\IngredientQuery;

@@ -6,12 +6,10 @@
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
-namespace PizzaService\Lib\Web\App\Controller\Traits;
+namespace PizzaService\Lib;
 
-use PizzaService\Lib\IngredientListConverter;
 use PizzaService\Propel\Models\OrderPizza;
 use PizzaService\Propel\Models\Pizza;
-use PizzaService\Propel\Models\PizzaIngredientQuery;
 
 /**
  * Converts a Propel Collection of Pizza Objects to an array that can be used to fill the twig templates.
@@ -36,6 +34,10 @@ trait PizzaListConverterTrait
             if ($pizza instanceof OrderPizza) $templateArray[] = $this->orderPizzaToTemplateArray($pizza);
             elseif ($pizza instanceof Pizza) $templateArray[] = $this->pizzaToTemplateArray($pizza);
         }
+
+        usort($templateArray, function($_pizzaA, $_pizzaB){
+            return strnatcmp($_pizzaA["orderCode"], $_pizzaB["orderCode"]);
+        });
 
         return $templateArray;
     }
