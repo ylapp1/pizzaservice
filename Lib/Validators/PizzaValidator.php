@@ -34,15 +34,17 @@ class PizzaValidator
             $error = $this->validateId($_pizza->getId());
             if ($error) return $error;
         }
+        else
+        {
+            $error = $this->validateName($_pizza->getName());
+            if ($error) return $error;
 
-        $error = $this->validateName($_pizza->getName());
-        if ($error) return $error;
+            $error = $this->validateOrderCode($_pizza->getOrderCode());
+            if ($error) return $error;
 
-        $error = $this->validateOrderCode($_pizza->getOrderCode());
-        if ($error) return $error;
-
-        $error = $this->validatePizzaIngredients($_pizza->getPizzaIngredients());
-        if ($error) return $error;
+            $error = $this->validatePizzaIngredients($_pizza->getPizzaIngredients());
+            if ($error) return $error;
+        }
 
         return false;
     }
