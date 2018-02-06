@@ -8,6 +8,7 @@
 
 namespace PizzaService\Lib\Web\App\Controller;
 
+use PizzaService\Lib\Validators\PizzaOrderValidator;
 use PizzaService\Lib\Web\PizzaOrder;
 use PizzaService\Propel\Models\City;
 use PizzaService\Propel\Models\CityName;
@@ -28,7 +29,6 @@ use PizzaService\Propel\Models\HouseNumberQuery;
 use PizzaService\Propel\Models\LastName;
 use PizzaService\Propel\Models\LastNameQuery;
 use PizzaService\Propel\Models\Order;
-use PizzaService\Propel\Models\PizzaQuery;
 use PizzaService\Propel\Models\Street;
 use PizzaService\Propel\Models\StreetName;
 use PizzaService\Propel\Models\StreetNameQuery;
@@ -324,58 +324,10 @@ class PizzaOrderProcessController
      */
     private function validateOrder()
     {
-        $totalAmountPizzas = $this->pizzaOrder->getTotalAmountOrderPizzas();
+        $pizzaOrderValidator = new PizzaOrderValidator();
 
-        if ($totalAmountPizzas == 0) return "Fehler: Die Bestellung ist leer";
-        elseif ($totalAmountPizzas > 100) return "Fehler: Es dürfen nicht mehr als 100 Pizzas auf einmal bestellt werden";
-        else
-        {
-            foreach ($this->pizzaOrder->getOrder() as $orderCode => $orderPizza)
-            {
-                if ($orderPizza->getAmount() > 50) return "Fehler: Eine Pizza in der Bestellung ist über 50 mal bestellt worden.";
-
-                $pizzaId = $orderPizza->getPizza()->getId();
-                if ($pizzaId)
-                { // If pizza id is set in the OrderPizza object
-                    $pizza = PizzaQuery::create()->findOneById($pizzaId);
-                    if (! $pizza) return "Fehler: Ungültige Pizza ID in der Bestellung";
-                }
-                else
-                { // If the pizza has no ID it will be saved to the database with this order
-
-                    $orderedPizza = $orderPizza->getPizza();
-
-                    /*
-                     * Check whether a pizza with the name, order code or ingredients/grams combination already exists in the database
-                     * This is necessary because some one else could have generated a pizza with the same order code for example before
-                     * the current user saved the order.
-                     */
-
-                    // Check name
-                    $pizza = PizzaQuery::create()->findOneByName($orderedPizza->getName());
-                    if ($pizza) return "Fehler: Eine Pizza mit dem Namen " . $orderedPizza->getName() . " existiert bereits in der Datenbank.";
-
-                    // Check order code
-                    $pizza = PizzaQuery::create()->findOneByOrderCode($orderedPizza->getOrderCode());
-                    if ($pizza) return "Fehler: Eine Pizza mit der Bestellnummer " . $orderedPizza->getOrderCode() . " existiert bereits in der Datenbank";
-
-                    // Check ingredients/grams combination
-                    $pizzaQuery = PizzaQuery::create();
-
-                    foreach ($orderedPizza->getPizzaIngredients() as $pizzaIngredient)
-                    {
-                        $pizzaQuery->usePizzaIngredientQuery()
-                                       ->filterByIngredientId($pizzaIngredient->getIngredientId())
-                                       ->filterByGrams($pizzaIngredient->getGrams())
-                                   ->endUse();
-                    }
-
-                    $pizza = $pizzaQuery->findOne();
-                    if ($pizza) return "Fehler: Eine Pizza mit dieser Zutaten/Menge Kombination existiert bereits in der Datenbank";
-                }
-            }
-        }
-
+        $error = $pizzaOrderValidator->validatePizzaOrder($this->pizzaOrder);
+        if ($error) return $error;
         return false;
     }
 
