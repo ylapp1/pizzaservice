@@ -43,7 +43,7 @@ $(document).ready(function(){
             dataType: "text",
             success: function(_error)
             {
-                if (_error === "") resetOrder();
+                if (_error === "") resetOrder("Bestellung zurückgesetzt");
             }
         })
 
@@ -73,8 +73,10 @@ function setTotalPrice(_totalPrice)
 
 /**
  * Clears the current order.
+ *
+ * @param {String} _message The success message that will be displayed
  */
-function resetOrder()
+function resetOrder(_message)
 {
     pizzaTableBody.find("tr").remove();
     pizzaTableBody.append("<tr><td colspan=\"6\" class=\"text-center alert alert-info\">Die Bestellung ist leer</td></tr>");
@@ -82,7 +84,7 @@ function resetOrder()
     setTotalPrice(0);
     orderButton.prop("disabled", true);
     resetOrderButton.prop("disabled", true);
-    showSuccessMessage("Bestellung zurückgesetzt");
+    showSuccessMessage(_message);
 }
 
 /**
@@ -132,8 +134,7 @@ function processOrder(_orderProcessUrl)
 
             if (_text.indexOf("Fehler") === -1)
             {
-                showSuccessMessage("<strong>Vielen Dank!</strong> Die Bestellung wurde entgegengenommen!");
-                resetOrder();
+                resetOrder("<strong>Vielen Dank!</strong> Die Bestellung wurde entgegengenommen!");
             }
             else showErrorMessage(_text.replace("Fehler: ", ""));
         },
