@@ -114,8 +114,8 @@ class PizzaGenerator
 
         } while ($this->generatedPizzaExistsInDatabase($pizza, count($pizza->getPizzaIngredients()),false));
 
-        $defaultPizzaIngredientsIds = array_map(function($data){
-            return $data["id"];
+        $defaultPizzaIngredientsIds = array_map(function($_data){
+            return $_data["id"];
         }, $this->defaultPizzaIngredientsData);
 
 
