@@ -13,12 +13,12 @@ $loader->addPsr4("PizzaService\\", __DIR__);
 Propel::init(__DIR__ . "/Propel/Conf/pizza_service-conf.php");
 
 use PizzaService\Cli\Commands\CompleteOrderCommand;
-use PizzaService\Cli\Commands\CreateIngredientCommand;
-use PizzaService\Cli\Commands\CreatePizzaCommand;
-use PizzaService\Cli\Commands\ListCustomerCommand;
-use PizzaService\Cli\Commands\ListIngredientCommand;
-use PizzaService\Cli\Commands\ListOrderCommand;
-use PizzaService\Cli\Commands\ListPizzaCommand;
+use PizzaService\Cli\Commands\CreateCommands\CreateIngredientCommand;
+use PizzaService\Cli\Commands\CreateCommands\CreatePizzaCommand;
+use PizzaService\Cli\Commands\ListCommands\ListCustomerCommand;
+use PizzaService\Cli\Commands\ListCommands\ListIngredientCommand;
+use PizzaService\Cli\Commands\ListCommands\ListOrderCommand;
+use PizzaService\Cli\Commands\ListCommands\ListPizzaCommand;
 use Symfony\Component\Console\Application;
 
 $application = new Application();

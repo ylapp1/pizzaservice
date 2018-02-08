@@ -6,7 +6,7 @@
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
-namespace PizzaService\Cli\Commands;
+namespace PizzaService\Cli\Commands\ListCommands;
 
 use PizzaService\Propel\Models\IngredientTranslation;
 use PizzaService\Propel\Models\IngredientTranslationQuery;
