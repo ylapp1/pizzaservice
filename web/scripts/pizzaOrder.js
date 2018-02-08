@@ -112,7 +112,7 @@ function getOrderProcessUrl(_addressInputs)
             return false;
         }
 
-        urlString += $(input).attr("name") + "=\"" + inputValue + "\"";
+        urlString += $(input).attr("name") + "=" + inputValue;
 
     });
 

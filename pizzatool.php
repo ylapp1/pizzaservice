@@ -15,6 +15,7 @@ Propel::init(__DIR__ . "/Propel/Conf/pizza_service-conf.php");
 use PizzaService\Cli\Commands\CompleteOrderCommand;
 use PizzaService\Cli\Commands\CreateIngredientCommand;
 use PizzaService\Cli\Commands\CreatePizzaCommand;
+use PizzaService\Cli\Commands\ListCustomerCommand;
 use PizzaService\Cli\Commands\ListIngredientCommand;
 use PizzaService\Cli\Commands\ListOrderCommand;
 use PizzaService\Cli\Commands\ListPizzaCommand;
@@ -26,6 +27,7 @@ $application->addCommands(
         new CompleteOrderCommand(),
         new CreateIngredientCommand(),
         new CreatePizzaCommand(),
+        new ListCustomerCommand(),
         new ListIngredientCommand(),
         new ListOrderCommand(),
         new ListPizzaCommand()
