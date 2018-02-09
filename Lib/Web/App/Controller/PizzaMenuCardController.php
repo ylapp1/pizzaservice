@@ -86,8 +86,6 @@ class PizzaMenuCardController
         $pizzaOrderCode = (int)$_GET["pizza-order-code"];
         $amount = (int)$_GET["amount"];
 
-        if ($amount < 1 || $amount > 50) return "Fehler: Die Anzahl je Pizza muss zwischen 1 und 50 liegen.";
-
         $pizza = PizzaQuery::create()->findOneByOrderCode($pizzaOrderCode);
 
         $orderPizza = new OrderPizza();
