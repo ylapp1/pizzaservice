@@ -299,7 +299,7 @@ class PizzaOrder
         $pizzaAmount = $_orderPizza->getAmount();
         if ($orderPizza) $pizzaAmount += $orderPizza->getAmount();
 
-        $totalPizzaAmount = $this->getTotalAmountOrderPizzas() + $pizzaAmount;
+        $totalPizzaAmount = $this->getTotalAmountOrderPizzas() + $_orderPizza->getAmount();
 
         if ($pizzaAmount < 1 || $pizzaAmount > 50) return "Die Anzahl je Pizza muss zwischen 1 und 50 liegen.";
         elseif ($totalPizzaAmount > 100) return "Es dürfen nicht mehr als 100 Pizzen auf einmal bestellt werden.";

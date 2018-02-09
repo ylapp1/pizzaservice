@@ -7,54 +7,29 @@
 
 $(document).ready(function(){
 
-    $("button.generate-pizza-button").on("click", function(){
-
-        var ingredientIds = [];
-
-        $("input:checked:not([disabled])").each( function(index, input) {
-            ingredientIds.push($(input).data("id"));
-        });
-
-        // Generate random pizza
-        $.ajax({url: "web/pizza-generator/generate-pizza",
-            type: "get",
-            dataType: "text",
-            data: {
-              ingredientIds: JSON.stringify(ingredientIds)
-            },
-            success: function(_pizzaTableHTML){
-
-                $(".pizza-table").replaceWith(_pizzaTableHTML);
-                showSuccessMessage("Pizza wurde erfolgreich generiert");
-            }
-        });
-
-    });
+    $("button.generate-pizza-button").on("click", generatePizza);
 
     $(document).on("click", "button:not(.generate-pizza-button)", function(){
-
-        var button = $(this);
-
-        var amount = button.parent().find("input").val();
-        amount = Number(amount);
-
-        var tableCells = button.parents().eq(2);
-
-        addGeneratedPizzaToOrder(tableCells.find("td:nth-child(2)").text(), amount);
+        addGeneratedPizzaToOrder($(this));
     })
 
 });
 
+
 /**
  * Adds the generated pizza to the order.
  *
- * @param _pizzaName String The name of the pizza
- * @param _amount int The amount of pizzas
+ * @param _button The order button that was clicked
  */
-function addGeneratedPizzaToOrder(_pizzaName, _amount)
+function addGeneratedPizzaToOrder(_button)
 {
+    var amount = _button.parent().find("input").val();
+    amount = Number(amount);
+
+    var pizzaName = _button.parents().eq(2).find("td:nth-child(2)").text();
+
     // Add pizza to order list
-    $.ajax({url: "web/pizza-generator/addrandompizzatoorder.php?amount=" + _amount,
+    $.ajax({url: "web/pizza-generator/addrandompizzatoorder.php?amount=" + amount,
         type: "get",
         dataType: "text",
         success: function(_error){
@@ -63,9 +38,35 @@ function addGeneratedPizzaToOrder(_pizzaName, _amount)
             else
             {
                 // Update the pizza counter
-                setPizzaCount(getPizzaCount() + _amount);
-                showSuccessMessage(_amount + "x \"" + _pizzaName + "\" erfolgreich zur Bestellung hinzugefügt!");
+                setPizzaCount(getPizzaCount() + amount);
+                showSuccessMessage(amount + "x \"" + pizzaName + "\" erfolgreich zur Bestellung hinzugefügt!");
             }
+        }
+    });
+}
+
+/**
+ * Generates a random pizza from the ingredients whose checkboxes are checked.
+ */
+function generatePizza()
+{
+    var ingredientIds = [];
+
+    $("input:checked:not([disabled])").each( function(index, input) {
+        ingredientIds.push($(input).data("id"));
+    });
+
+    // Generate random pizza
+    $.ajax({url: "web/pizza-generator/generate-pizza",
+        type: "get",
+        dataType: "text",
+        data: {
+            ingredientIds: JSON.stringify(ingredientIds)
+        },
+        success: function(_pizzaTableHTML){
+
+            $(".pizza-table").replaceWith(_pizzaTableHTML);
+            showSuccessMessage("Pizza wurde erfolgreich generiert");
         }
     });
 }

@@ -1,15 +1,32 @@
 /**
  * @file
  * @version 0.1
- * @copyright 2017 CN-Consult GmbH
+ * @copyright 2017-2018 CN-Consult GmbH
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
 // This file includes functions that are shared across all pages
 
+/**
+ * The div tag that contains the status message paragraph
+ */
 var message;
+
+/**
+ * The paragraph tag that contains the status message text
+ */
 var messageText;
+
+/**
+ * The paragraph tag that contains the amount of pizzas in the order
+ */
 var pizzaCounter;
+
+/**
+ * The timeout for auto hiding the message
+ */
+var timer;
+
 
 $(document).ready(function(){
 
@@ -27,7 +44,10 @@ $(document).ready(function(){
  */
 function hideMessage()
 {
-    message.addClass("invisible");
+    message.fadeOut(1000, function(){
+        message.css("display", "block")
+               .css("visibility", "hidden");
+    });
 }
 
 /**
@@ -38,6 +58,15 @@ function hideMessage()
  */
 function showMessage(_text, _type)
 {
+    if (message.css("visibility") === "visible")
+    { // Finish the previous hide animation immediately
+
+        clearTimeout(timer);
+        message.css("display", "block")
+               .css("visibility", "hidden")
+               .stop(false, true);
+    }
+
     message.attr("class", "alert alert-" + _type);
 
     // Reset the text
@@ -46,7 +75,14 @@ function showMessage(_text, _type)
     // Add the new text
     messageText.append(_text);
 
-    message.show();
+    message.css("display", "none")
+           .css("visibility", "visible")
+           .fadeIn(500);
+
+    // Auto hide the message after 2 seconds
+    timer = setTimeout(function(){
+        hideMessage();
+    }, 2000);
 }
 
 /**

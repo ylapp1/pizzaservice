@@ -5,10 +5,26 @@
  * @author Yannick Lapp <yannick.lapp@cn-consult.eu>
  */
 
+/**
+ * The order button
+ */
 var orderButton;
+
+/**
+ * The tbody element of the pizza table
+ */
 var pizzaTableBody;
+
+/**
+ * The reset order button
+ */
 var resetOrderButton;
+
+/**
+ * The total price span element
+ */
 var totalPrice;
+
 
 $(document).ready(function(){
 
@@ -17,39 +33,21 @@ $(document).ready(function(){
     resetOrderButton = $(".reset-order-button");
     totalPrice = $(".totalPrice span");
 
-    // Event handler for the order button
-    $(".address-input-field button").on("click", function(){
-
-        var addressInputs = $(this).parents().eq(2).find("input");
-
-        var orderProcessUrl = getOrderProcessUrl(addressInputs);
-        if (! orderProcessUrl) return;
-
-        processOrder(orderProcessUrl);
+    orderButton.on("click", function(){
+        processOrder($(this));
 
         // Prevent the form from being submitted by HTML
         return false;
-
     });
 
     pizzaTableBody.find("input").on("change", function(){
         changeAmountOrderPizzas($(this));
     });
 
-    resetOrderButton.on("click", function(){
-
-        $.ajax({url: "web/order/reset-order",
-            type: "get",
-            dataType: "text",
-            success: function(_error)
-            {
-                if (_error === "") resetOrder("Bestellung zurückgesetzt");
-            }
-        })
-
-    })
+    resetOrderButton.on("click", resetOrder);
 
 });
+
 
 /**
  * Returns the current price in the total price paragraph.
@@ -72,11 +70,27 @@ function setTotalPrice(_totalPrice)
 }
 
 /**
- * Clears the current order.
+ * Resets the pizzas of the current order.
+ */
+function resetOrder()
+{
+    $.ajax({url: "web/order/reset-order",
+        type: "get",
+        dataType: "text",
+        success: function(_error)
+        {
+            if (_error === "") clearOrder("Bestellung zurückgesetzt");
+            else showErrorMessage(_error);
+        }
+    })
+}
+
+/**
+ * Clears the order that is displayed on the page.
  *
  * @param {String} _message The success message that will be displayed
  */
-function resetOrder(_message)
+function clearOrder(_message)
 {
     pizzaTableBody.find("tr").remove();
     pizzaTableBody.append("<tr><td colspan=\"6\" class=\"text-center alert alert-info\">Die Bestellung ist leer</td></tr>");
@@ -122,19 +136,23 @@ function getOrderProcessUrl(_addressInputs)
 /**
  * Tries to process the order by sending the customer address data to the php.
  *
- * @param {String} _orderProcessUrl
+ * @param _button The address input field button that was clicked
  */
-function processOrder(_orderProcessUrl)
+function processOrder(_button)
 {
+    var addressInputs = _button.parents().eq(2).find("input");
+    var orderProcessUrl = getOrderProcessUrl(addressInputs);
+    if (! orderProcessUrl) return;
+
     // Add pizza to order list
-    $.ajax({url: _orderProcessUrl,
+    $.ajax({url: orderProcessUrl,
         type: "get",
         dataType: "text",
         success: function(_text){
 
             if (_text.indexOf("Fehler") === -1)
             {
-                resetOrder("<strong>Vielen Dank!</strong> Die Bestellung wurde entgegengenommen!");
+                clearOrder("<strong>Vielen Dank!</strong> Die Bestellung wurde entgegengenommen!");
             }
             else showErrorMessage(_text.replace("Fehler: ", ""));
         },
