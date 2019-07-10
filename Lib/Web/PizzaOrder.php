@@ -8,6 +8,7 @@
 
 namespace PizzaService\Lib\Web;
 
+use PizzaService\Lib\Validators\PizzaOrderValidator;
 use PizzaService\Propel\Models\OrderPizza;
 use PizzaService\Propel\Models\Pizza;
 use PizzaService\Propel\Models\PizzaQuery;
@@ -245,6 +246,8 @@ class PizzaOrder
     }
 
     /**
+     * Adds a new order pizza to the order.
+     *
      * @param OrderPizza $_orderPizza
      *
      * @return String Empty string
@@ -262,7 +265,9 @@ class PizzaOrder
     }
 
     /**
-     * @param OrderPizza $_orderPizza
+     * Changes the amount of an order pizza by the amount that is stored in the parameter $_orderPizza.
+     *
+     * @param OrderPizza $_orderPizza The order pizza object containing the difference to the previous amount
      *
      * @return String Error message or empty string
      *
@@ -287,7 +292,7 @@ class PizzaOrder
     /**
      * Validates whether a pizza amount is ok.
      *
-     * @param OrderPizza $_validateOrderPizza The order pizza
+     * @param OrderPizza $_validateOrderPizza The order pizza containing the amount that shall be added to the current amount
      * @param bool $_isAddOrderPizza Indicates whether the order pizza is added to the order
      *
      * @return String|bool Error message or false
@@ -298,38 +303,28 @@ class PizzaOrder
     {
         $orderPizza = $this->getOrderPizza($_validateOrderPizza->getPizza()->getOrderCode());
 
-        if ($_isAddOrderPizza)
+        if (! $orderPizza)
         {
-            $validateOrderPizza = $_validateOrderPizza;
+            $previousAmount = 0;
+            $this->addNewOrderPizza($_validateOrderPizza);
         }
         else
         {
-            $validateOrderPizza = clone $_validateOrderPizza;
-            $validateOrderPizza->setAmount($validateOrderPizza->getAmount() + $orderPizza->getAmount());
+            $previousAmount = $orderPizza->getAmount();
+
+            if ($_isAddOrderPizza) $orderPizza->setAmount($_validateOrderPizza->getAmount());
+            else $orderPizza->setAmount($previousAmount + $_validateOrderPizza->getAmount());
         }
 
+        $pizzaOrderValidator = new PizzaOrderValidator();
+        $error = $pizzaOrderValidator->validatePizzaOrder($this);
 
-        // Validate pizza amount for the single pizza
-        if ($validateOrderPizza->getAmount() < 1 || $validateOrderPizza->getAmount() > 50)
-        {
-            return "Fehler: Die Anzahl je Pizza muss zwischen 1 und 50 liegen.";
-        }
+        // Restore original amount
+        if ($previousAmount == 0) $this->removeOrderPizza($_validateOrderPizza->getPizza()->getOrderCode());
+        else $orderPizza->setAmount($previousAmount);
 
-        // Validate total pizza amount
-        $totalPizzaAmount = 0;
-
-        foreach ($this->getOrder() as $orderPizza)
-        {
-            if ($orderPizza->getPizza()->getOrderCode() == $validateOrderPizza->getPizza()->getOrderCode())
-            {
-                $totalPizzaAmount += $validateOrderPizza->getAmount();
-            }
-            else $totalPizzaAmount += $orderPizza->getAmount();
-        }
-
-        if ($totalPizzaAmount > 100) return "Es dürfen nicht mehr als 100 Pizzen auf einmal bestellt werden.";
-
-        return false;
+        if ($error) return str_replace("Fehler: ", "", $error);
+        else return false;
     }
 
     /**

@@ -26,6 +26,11 @@
 
     "maxTotalWeight": 400.0
 
+  },
+
+  "pizzaOrder": {
+    "maxTotalAmountPizzas": 100,
+    "maxAmountPerPizza": 50
   }
 
 }

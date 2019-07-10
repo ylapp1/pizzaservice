@@ -8,6 +8,7 @@
 
 namespace PizzaService\Lib\Validators;
 
+use PizzaService\Lib\ConfigLoader;
 use PizzaService\Lib\Web\PizzaOrder;
 use PizzaService\Propel\Models\OrderPizza;
 
@@ -16,6 +17,32 @@ use PizzaService\Propel\Models\OrderPizza;
  */
 class PizzaOrderValidator
 {
+    /**
+     * The maximum allowed amount per pizza
+     *
+     * @var $maxAmountPerPizza
+     */
+    private $maxAmountPerPizza;
+
+    /**
+     * The maximum allowed total amount of pizzas in the order
+     *
+     * @var int $maxTotalAmountPizzas
+     */
+    private $maxTotalAmountPizzas;
+
+
+    /**
+     * PizzaOrderValidator constructor.
+     */
+    public function __construct()
+    {
+        $configLoader = new ConfigLoader(__DIR__ . "/../../config/config.json");
+
+        $this->maxAmountPerPizza = $configLoader->getConfigValue("maxAmountPerPizza", 50);
+        $this->maxTotalAmountPizzas = $configLoader->getConfigValue("maxTotalAmountPizzas", 100);
+    }
+
     /**
      * Checks whether a pizza order is valid.
      *
@@ -27,10 +54,10 @@ class PizzaOrderValidator
      */
     public function validatePizzaOrder(PizzaOrder $_pizzaOrder)
     {
-        $error = $this->validateTotalAmount($_pizzaOrder->getTotalAmountOrderPizzas());
+        $error = $this->validateOrderPizzas($_pizzaOrder->getOrder());
         if ($error) return $error;
 
-        $error = $this->validateOrderPizzas($_pizzaOrder->getOrder());
+        $error = $this->validateTotalAmount($_pizzaOrder->getTotalAmountOrderPizzas());
         if ($error) return $error;
 
         return false;
@@ -46,7 +73,7 @@ class PizzaOrderValidator
     private function validateTotalAmount(int $_totalAmount)
     {
         if ($_totalAmount == 0) return "Fehler: Die Bestellung ist leer";
-        else if ($_totalAmount > 100) return "Fehler: Es dürfen nicht mehr als 100 Pizzas auf einmal bestellt werden";
+        else if ($_totalAmount > $this->maxTotalAmountPizzas) return "Fehler: Es dürfen nicht mehr als " . $this->maxTotalAmountPizzas . " Pizzas auf einmal bestellt werden";
         else return false;
     }
 
@@ -65,7 +92,7 @@ class PizzaOrderValidator
 
         foreach ($_orderPizzas as $orderPizza)
         {
-            $error = $orderPizzaValidator->validateOrderPizza($orderPizza);
+            $error = $orderPizzaValidator->validateOrderPizza($orderPizza, $this->maxAmountPerPizza);
             if ($error) return $error;
         }
 

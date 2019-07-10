@@ -19,12 +19,13 @@ class OrderPizzaValidator
      * Checks whether an OrderPizza object is valid.
      *
      * @param OrderPizza $_orderPizza The order pizza
+     * @param int $_maxAmountPerPizza The maximum allowed amount per pizza
      *
      * @return String|bool Error message or false
      *
      * @throws \PropelException
      */
-    public function validateOrderPizza(OrderPizza $_orderPizza)
+    public function validateOrderPizza(OrderPizza $_orderPizza, int $_maxAmountPerPizza)
     {
         $pizza = $_orderPizza->getPizza();
         if (! $pizza) return "Fehler: Ungültige Bestellpizza";
@@ -37,7 +38,7 @@ class OrderPizzaValidator
         $error = $pizzaValidator->validatePizza($pizza, $pizzaHasId);
         if ($error) return $error;
 
-        $error = $this->validateAmount($_orderPizza->getAmount());
+        $error = $this->validateAmount($_orderPizza->getAmount(), $_maxAmountPerPizza);
         if ($error) return $error;
 
         return false;
@@ -47,13 +48,14 @@ class OrderPizzaValidator
      * Checks whether the amount of an order pizza is valid.
      *
      * @param int $_amount The amount of the order pizza
+     * @param int $_maxAmountPerPizza The maximum allowed amount per pizza
      *
      * @return String|bool Error message or false
      */
-    private function validateAmount(int $_amount)
+    private function validateAmount(int $_amount, int $_maxAmountPerPizza)
     {
-        if ($_amount > 50) return "Fehler: Eine Pizza in der Bestellung ist über 50 mal bestellt worden.";
-        else if ($_amount < 0) return "Fehler: Die Bestellmenge je Pizza darf 0 nicht unterschreiten.";
+        if ($_amount > $_maxAmountPerPizza) return "Fehler: Die Bestellmenge je Pizza darf " . $_maxAmountPerPizza . " nicht überschreiten.";
+        elseif ($_amount < 1) return "Fehler: Die Bestellmenge je Pizza darf 1 nicht unterschreiten.";
         else return false;
     }
 }
